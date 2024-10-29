@@ -10,20 +10,23 @@ import com.merckgroup.framework.services.Service;
 /**
  * Simple Application strutucture to create java service based application
  * processing.
- * 
+ *
  * @author Frédéric Delorme
  * @since 0.0.1
  */
 public class App {
-    private String appName = "Demo01App";
+    protected String appName = "App";
     private Map<String, Service> services = new HashMap<>();
+    private boolean exit = false;
+    private long maxLoopCount = -1;
 
     public App() {
     }
 
     public void run(String[] args) {
-        info(App.class, "Application start %s", appName);
+        info(App.class, "Application start");
         init(args);
+        info(App.class, "Application named \"%s\"", appName);
         process();
         dispose();
         info(App.class, "Application %s stop", appName);
@@ -34,7 +37,11 @@ public class App {
     }
 
     private void process() {
-        services.values().stream().sorted(Comparator.comparing(Service::getPriority)).forEach(s -> s.process(this));
+        long loopCount = 0;
+        while (!exit && !(maxLoopCount != -1 && loopCount > maxLoopCount)) {
+            services.values().stream().sorted(Comparator.comparing(Service::getPriority)).forEach(s -> s.process(this));
+            loopCount++;
+        }
     }
 
     private void dispose() {
@@ -64,25 +71,37 @@ public class App {
 
     /**
      * Add a new {@link Service} to the {@link App} instance.
-     * 
+     *
      * @param s the new {@link Service} instance to be added to the application.
      */
     protected void add(Service s) {
         this.services.put(s.getName(), s);
     }
 
+    public Service getService(String serviceName) {
+        return services.get(serviceName);
+    }
+
+    public void requestExit(boolean exit) {
+        this.exit = exit;
+    }
+
     /**
-     * default entry point for the applciation. Some arguments can be provided from
+     * Default entry point for the application. Some arguments can be provided from
      * the command line.
-     * 
-     * @param args
+     *
+     * @param args the list of arguments coming from the Java command line.
      */
     public static void main(String[] args) {
         App app = new App();
         app.run(args);
     }
 
-    public Service getService(String serviceName) {
-        return services.get(serviceName);
+    public void setAppName(String name) {
+        this.appName = name;
+    }
+
+    public void setTestLoopCounter(long maxLoop) {
+        this.maxLoopCount = maxLoop;
     }
 }
