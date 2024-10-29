@@ -8,7 +8,7 @@ import com.merckgroup.framework.App;
 import com.merckgroup.framework.entities.Entity;
 
 /**
- * 
+ *
  */
 
 public class EntityManager extends AbstractService {
@@ -41,6 +41,12 @@ public class EntityManager extends AbstractService {
     @Override
     public void dispose(App app) {
 
+    }
+
+    @Override
+    public Map<String, Object> getStats() {
+        return Map.of("service.entity.manager.counter.entities", entities.values().size(),
+                "service.entity.manager.counter.active", entities.values().stream().filter(Entity::isActive).count());
     }
 
     public void add(Entity e) {

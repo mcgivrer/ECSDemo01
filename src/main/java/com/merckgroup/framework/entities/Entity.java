@@ -54,7 +54,7 @@ public class Entity {
 
     /**
      * Create anew named {@link Entity}.
-     * 
+     *
      * @param name
      */
     public Entity(String name) {
@@ -64,7 +64,7 @@ public class Entity {
 
     /**
      * retrieve the unique Id for this {@link Entity}.
-     * 
+     *
      * @return
      */
     public long getId() {
@@ -73,7 +73,7 @@ public class Entity {
 
     /**
      * Retrieve the unique UUID for thie {@link Entity}.
-     * 
+     *
      * @return
      */
     public UUID getUUID() {
@@ -82,7 +82,7 @@ public class Entity {
 
     /**
      * Retrieve the name for this {@link Entity}.
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -92,7 +92,7 @@ public class Entity {
     /**
      * Add a child {@link Entity} to this Enttiy. Initialize root tree node if
      * required.
-     * 
+     *
      * @param child the child {@link Entity} to be added.
      * @return the updated Entity as a fluent API.
      */
@@ -111,7 +111,7 @@ public class Entity {
 
     /**
      * Set the root tree for those {@link Entity}.
-     * 
+     *
      * @param r
      */
     public static void setRoot(Entity r) {
@@ -120,7 +120,7 @@ public class Entity {
 
     /**
      * retrieve all the current children of this {@link Entity}.
-     * 
+     *
      * @return a collection of all child entities.
      */
     public Collection<Entity> getChildren() {
@@ -129,7 +129,7 @@ public class Entity {
 
     /**
      * Set the current {@link Entity} active.
-     * 
+     *
      * @param a the active value.
      * @return the updated {@link Entity}.
      */
@@ -142,7 +142,7 @@ public class Entity {
      * Update the current {@link Entity} regarding its duration and lifetime. If
      * duration is differente of -1 lifeTime reach the duration, {@link Entity} is
      * deactivated.
-     * 
+     *
      * @param elapsed the elapsed tie since previous call.
      */
     public void update(long elapsed) {
@@ -155,8 +155,8 @@ public class Entity {
         }
     }
 
-    public Component getComponent(Class<? extends Component> class1) {
-        return components.stream().filter(c -> c.getClass().equals(class1)).findFirst().get();
+    public <T extends Component> T getComponent(Class<? extends Component> class1) {
+        return (T) components.stream().filter(c -> c.getClass().equals(class1)).findFirst().get();
     }
 
     public List<Component> getComponents() {
@@ -165,5 +165,9 @@ public class Entity {
 
     public boolean containsComponent(Class<PhysicComponent> class1) {
         return components.stream().anyMatch(c -> c.getClass().equals(class1));
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

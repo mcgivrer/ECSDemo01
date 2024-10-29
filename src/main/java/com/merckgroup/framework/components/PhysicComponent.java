@@ -1,5 +1,6 @@
 package com.merckgroup.framework.components;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class PhysicComponent implements Component {
      * The mass of the {@link Entity} according to the Newton's physic world.
      */
     private double mass;
+    private Rectangle2D bbox = new Rectangle2D.Double();
 
     /**
      * Createa a blanck {@link PhysicComponent} ready to be used within an
@@ -65,6 +67,7 @@ public class PhysicComponent implements Component {
      */
     public PhysicComponent setPosition(Vector2d position) {
         this.position = position;
+        this.bbox.setRect(position.getX(), position.getY(), size.getX(), size.getX());
         return this;
     }
 
@@ -160,9 +163,12 @@ public class PhysicComponent implements Component {
     }
 
     public PhysicComponent setSize(double w, double h) {
-
         this.size = new Vector2d(w, h);
+        this.bbox.setRect(position.getX(), position.getY(), size.getX(), size.getX());
         return this;
     }
 
+    public Rectangle2D getBBox() {
+        return bbox;
+    }
 }

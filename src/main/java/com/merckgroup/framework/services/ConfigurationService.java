@@ -23,7 +23,7 @@ public class ConfigurationService extends AbstractService {
     private Map<String, Object> values = new ConcurrentHashMap<>();
 
     /**
-     * Properties object to load properteis file key/values.
+     * Properties object to load properties file key/values.
      */
     private Properties config = new Properties();
 
@@ -31,6 +31,7 @@ public class ConfigurationService extends AbstractService {
      * THe default configuration file name.
      */
     private String defaultConfigurationFileName;
+    private long nbGetValues = 0;
 
     /**
      * Configuration service initialization according to parent app.
@@ -65,6 +66,13 @@ public class ConfigurationService extends AbstractService {
 
     @Override
     public void dispose(App app) {
+    }
+
+    @Override
+    public Map<String, Object> getStats() {
+        return Map.of("service.configuration.service.values", values,
+                "service.configuration.service.counter.getValue", nbGetValues,
+                "service.configuration.service.counter.config.file.entries", config.entrySet().size());
     }
 
     /**
@@ -146,6 +154,7 @@ public class ConfigurationService extends AbstractService {
      * @return the corresponding value from the values map.
      */
     public <T> T getValue(String attrKeyName) {
+        nbGetValues++;
         return (T) values.get(attrKeyName);
     }
 

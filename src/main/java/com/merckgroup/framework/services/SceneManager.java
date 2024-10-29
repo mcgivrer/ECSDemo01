@@ -126,4 +126,9 @@ public class SceneManager extends AbstractService {
     public void dispose(App app) {
         scenes.values().stream().forEach(scene -> scene.dispose(app));
     }
+
+    @Override
+    public Map<String, Object> getStats() {
+        return Map.of("service.scene.manager.default.scene", currentScene != null ? currentScene.getName() : "none");
+    }
 }

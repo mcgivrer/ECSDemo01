@@ -3,6 +3,7 @@ package com.merckgroup.framework.services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.merckgroup.framework.App;
 import com.merckgroup.framework.math.Vector2d;
@@ -12,7 +13,7 @@ import com.merckgroup.framework.entities.Entity;
 /**
  * the {@link PhysicEngine} service is dedicated to compute Newton's laws on the
  * active Entities from the {@link EntityManager}.
- * 
+ *
  * @author Frédéric Delorme
  * @since 0.0.1
  */
@@ -20,6 +21,7 @@ public class PhysicEngine extends AbstractService {
 
     private EntityManager eMgr;
     private long currentTime = 0;
+    private int nbUpdatedObjects = 0;
 
     public PhysicEngine(App app) {
         super(app);
@@ -39,12 +41,14 @@ public class PhysicEngine extends AbstractService {
     @Override
     public void process(App app) {
         long previousTime = currentTime;
+        nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
         long elapsed = currentTime - previousTime;
         if (elapsed > 0) {
             allEntities.stream().sorted().forEach(e -> {
                 updateEntity(elapsed, e);
+                nbUpdatedObjects++;
             });
         }
     }
@@ -76,6 +80,11 @@ public class PhysicEngine extends AbstractService {
 
     @Override
     public void dispose(App app) {
+    }
+
+    @Override
+    public Map<String, Object> getStats() {
+        return Map.of("service.physic.engine.object.counter", nbUpdatedObjects);
     }
 
 }
