@@ -17,7 +17,7 @@ import com.merckgroup.framework.scenes.Scene;
  * <code>app.scenes.default</code> respectively the list of scene to me managed
  * by the service, and the default one to be loaded at App start during service
  * initialization phase.
- * 
+ *
  * @author Frédéric Delorme
  * @since 0.0.1
  */
@@ -35,7 +35,7 @@ public class SceneManager extends AbstractService {
 
     /**
      * Initialize the Scene manager service.
-     * 
+     *
      * @param app the parent {@link App} instance.
      */
     public SceneManager(App app) {
@@ -58,7 +58,7 @@ public class SceneManager extends AbstractService {
 
     /**
      * Activate the sceneName instance. if a rpevious scene is active, dispose it.
-     * 
+     *
      * @param sceneName the name of the next scene to be activated.
      */
     private void activate(String sceneName) {
@@ -71,14 +71,15 @@ public class SceneManager extends AbstractService {
             currentScene.create(app);
             EntityManager entMgr = (EntityManager) app.getService(EntityManager.class.getSimpleName());
             entMgr.addAll(currentScene.getEntities());
+            info(SceneManager.class, "Scene %s loaded and activated", sceneName);
         }
     }
 
     /**
      * Create a Scene instances according to configuration list.
-     * 
+     *
      * @param scenesList the list of {@link Scene} implementation classes from the
-     *                       configuration file.
+     *                   configuration file.
      */
     private void createSceneInstances(String[] scenesList) {
         Arrays.asList(scenesList).forEach(scene -> {
@@ -89,9 +90,10 @@ public class SceneManager extends AbstractService {
                 Class<?> sceneClass = Class.forName(sceneClassName);
                 Scene sceneInstance = (Scene) sceneClass.getConstructor(App.class, String.class).newInstance(app, name);
                 scenes.put(name, sceneInstance);
+                info(SceneManager.class, "Scene [%s] named \"%s\" instantiated", sceneClassName, name);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                error(SceneManager.class, "Unable to instantiate Scene %s with %s", name, sceneClassName);
+                     | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                error(SceneManager.class, "Unable to instantiate Scene [%s] with name \"%s\"", sceneClassName, name);
             }
         });
     }

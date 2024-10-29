@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
 import com.merckgroup.framework.App;
-import com.merckgroup.framework.Vector2d;
+import com.merckgroup.framework.math.Vector2d;
 import com.merckgroup.framework.components.GraphicComponent;
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.entities.Entity;
@@ -18,7 +18,7 @@ import com.merckgroup.framework.services.InputService;
  */
 public class PlayScene extends AbstractScene {
 
-    protected PlayScene(App app, String name) {
+    public PlayScene(App app, String name) {
         super(app, name);
     }
 
@@ -26,21 +26,21 @@ public class PlayScene extends AbstractScene {
     public void create(App app) {
         Entity player = new Entity("player")
                 .add(new GraphicComponent()
-                    .setColor(Color.WHITE)
-                    .setFillColor(Color.RED)
-                    .setShape(new Rectangle2D.Double()))
+                        .setColor(Color.WHITE)
+                        .setFillColor(Color.RED)
+                        .setShape(new Rectangle2D.Double()))
                 .add(new PhysicComponent()
-                    .setMaterial(Material.DEFAULT)
-                    .setMass(60.0)
-                    .setPosition(new Vector2d(100.0, 100.0))
-                    .setSize(50.0, 50.0));
+                        .setMaterial(Material.DEFAULT)
+                        .setMass(60.0)
+                        .setPosition(new Vector2d(100.0, 100.0))
+                        .setSize(50.0, 50.0));
 
         add(player);
     }
 
     @Override
     public void update(App app) {
-        InputService input = (InputService)app.getService(InputService.class.getSimpleName());
+        InputService input = (InputService) app.getService(InputService.class.getSimpleName());
         if (input.isKeyPressed(KeyEvent.VK_UP)) {
 
         }

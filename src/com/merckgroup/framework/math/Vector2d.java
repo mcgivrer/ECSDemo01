@@ -1,4 +1,4 @@
-package com.merckgroup.framework;
+package com.merckgroup.framework.math;
 
 import java.util.List;
 import java.util.Objects;

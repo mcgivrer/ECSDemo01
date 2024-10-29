@@ -3,22 +3,50 @@ package com.merckgroup.framework.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.merckgroup.framework.Vector2d;
+import com.merckgroup.framework.math.Vector2d;
 import com.merckgroup.framework.entities.Entity;
 import com.merckgroup.framework.entities.Material;
 
+/**
+ * The {@link PhysicComponent} is a {@link Component} implementation used by the {@link com.merckgroup.framework.services.PhysicEngine} to process
+ * position, velocity and acceleration.
+ *
+ * @author Frédéric Delorme
+ * @since 0.0.1
+ */
 public class PhysicComponent implements Component {
+    /**
+     * {@link Entity}'s position in a 2D world.
+     */
     private Vector2d position = new Vector2d();
+    /**
+     * {@link Entity} size in a 2D world
+     */
     private Vector2d size = new Vector2d();
+    /**
+     * {@link Entity}'s velocity.
+     */
     private Vector2d velocity = new Vector2d();
+    /**
+     * {@link Entity} resulting acceleration.
+     */
     private Vector2d acceleration = new Vector2d();
+    /**
+     * Forces applied to the {@link Entity}.
+     */
     private List<Vector2d> forces = new ArrayList<>();
+    /**
+     * A Material for the Entity used in the Newton's physic computation.
+     */
     private Material material;
+    /**
+     * The mass of the {@link Entity} according to the Newton's physic world.
+     */
     private double mass;
 
     /**
-     * Createa a blanck {@link PhysicComponent} ready to used into an
-     * {@link Entity}.
+     * Createa a blanck {@link PhysicComponent} ready to be used within an
+     * {@link Entity} fromp the {@link com.merckgroup.framework.services.PhysicEngine}.
      */
     public PhysicComponent() {
         material = Material.DEFAULT;
@@ -101,7 +129,7 @@ public class PhysicComponent implements Component {
 
     /**
      * Add a specific Vector2d force to the forces list.
-     * 
+     *
      * @param force
      */
     public PhysicComponent add(Vector2d force) {

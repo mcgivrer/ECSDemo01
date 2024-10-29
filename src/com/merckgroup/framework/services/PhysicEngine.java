@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.merckgroup.framework.App;
-import com.merckgroup.framework.Vector2d;
+import com.merckgroup.framework.math.Vector2d;
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.entities.Entity;
 
