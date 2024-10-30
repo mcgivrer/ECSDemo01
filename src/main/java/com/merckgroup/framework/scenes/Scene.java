@@ -21,6 +21,8 @@ public interface Scene {
 
     Collection<Entity> getEntities();
 
+    Entity getEntity(String string);
+
     void dispose(App app);
 
     String requestChange();

@@ -78,8 +78,8 @@ public class App {
         this.services.put(s.getName(), s);
     }
 
-    public Service getService(String serviceName) {
-        return services.get(serviceName);
+    public <T extends Service> T getService(String serviceName) {
+        return (T) services.get(serviceName);
     }
 
     public void requestExit(boolean exit) {

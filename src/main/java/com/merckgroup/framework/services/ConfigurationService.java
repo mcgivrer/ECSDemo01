@@ -2,6 +2,7 @@ package com.merckgroup.framework.services;
 
 import static com.merckgroup.framework.App.*;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -70,9 +71,8 @@ public class ConfigurationService extends AbstractService {
 
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.configuration.service.values", values,
-                "service.configuration.service.counter.getValue", nbGetValues,
-                "service.configuration.service.counter.config.file.entries", config.entrySet().size());
+        return Map.of("service.configuration.service.values", values, "service.configuration.service.counter.getValue",
+                nbGetValues, "service.configuration.service.counter.config.file.entries", config.entrySet().size());
     }
 
     /**
@@ -98,37 +98,53 @@ public class ConfigurationService extends AbstractService {
      */
     private void extractConfigValue(String key, String value) {
         switch (key.toLowerCase()) {
-            case "app.config", "config", "c" -> {
-                defaultConfigurationFileName = value;
-                info(ConfigurationService.class, "Configuration file name set to %s", defaultConfigurationFileName);
-            }
-            case "app.debug.level", "debuglevel", "dl" -> {
-                values.put("app.debug.level", Integer.parseInt(value));
-                info(ConfigurationService.class, "Debug Level set to %s (value from 0 to 6)", value);
-            }
-            case "app.debug.counter", "testcounter", "tc" -> {
-                long counter = Long.parseLong(value);
-                values.put("app.debug.counter", counter);
-                info(ConfigurationService.class, "Test mode: max loop counter set to %s", value);
-                app.setTestLoopCounter(counter);
-            }
-            case "app.scenes.list", "scenes" -> {
-                values.put("app.scenes.list", value.split(";"));
-                info(ConfigurationService.class, "Scene list is [%s]", value);
-            }
-            case "app.window.title" -> {
-                values.put("app.window.title", value);
-                app.setAppName(value);
-                info(ConfigurationService.class, "Set application name and window title to \"%s\"", value);
-            }
-            case "app.scenes.default", "scene" -> {
-                values.put("app.scenes.default", value);
-                info(ConfigurationService.class, "Default scene is %s", value);
-
-            }
-            default -> {
-                warn(ConfigurationService.class, "Unknown argument %s:%s", key, value);
-            }
+        case "app.config", "config", "c" -> {
+            defaultConfigurationFileName = value;
+            info(ConfigurationService.class, "Configuration file name set to %s", defaultConfigurationFileName);
+        }
+        case "app.debug.level", "debuglevel", "dl" -> {
+            values.put("app.debug.level", Integer.parseInt(value));
+            info(ConfigurationService.class, "Debug Level set to %s (value from 0 to 6)", value);
+        }
+        case "app.debug.counter", "testcounter", "tc" -> {
+            long counter = Long.parseLong(value);
+            values.put("app.debug.counter", counter);
+            info(ConfigurationService.class, "Test mode: max loop counter set to %s", value);
+            app.setTestLoopCounter(counter);
+        }
+        case "app.scenes.list", "scenes" -> {
+            values.put("app.scenes.list", value.split(";"));
+            info(ConfigurationService.class, "Scene list is [%s]", value);
+        }
+        case "app.window.title" -> {
+            values.put("app.window.title", value);
+            app.setAppName(value);
+            info(ConfigurationService.class, "Set application name and window title to \"%s\"", value);
+        }
+        case "app.scenes.default", "scene" -> {
+            values.put("app.scenes.default", value);
+            info(ConfigurationService.class, "Default scene is %s", value);
+        }
+        case "app.render.buffer.size" -> {
+            String[] sizes = value.split("x");
+            Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[0]));
+            values.put("app.render.buffer.size", buffSize);
+            info(ConfigurationService.class, "Rendering buffer size set to %s", value);
+        }
+        case "app.render.window.size" -> {
+            String[] sizes = value.split("x");
+            Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[0]));
+            values.put("app.render.window.size", buffSize);
+            info(ConfigurationService.class, "Rendering window size set to %s", value);
+        }
+        case "app.render.window.max.buffers" -> {
+            int maxBuffers = Integer.parseInt(value);
+            values.put("app.render.window.max.buffers", maxBuffers);
+            info(ConfigurationService.class, "Rendering max buffer number set to %s", value);
+        }
+        default -> {
+            warn(ConfigurationService.class, "Unknown argument %s:%s", key, value);
+        }
         }
     }
 

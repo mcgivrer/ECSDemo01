@@ -1,24 +1,25 @@
 package com.merckgroup.framework.services;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import com.merckgroup.framework.App;
 import com.merckgroup.framework.components.GraphicComponent;
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.components.PriorityComponent;
 import com.merckgroup.framework.entities.Camera;
 import com.merckgroup.framework.entities.Entity;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.merckgroup.framework.App.error;
-import static java.util.stream.Collectors.toList;
 
 public class RenderingService extends AbstractService {
 
@@ -27,8 +28,7 @@ public class RenderingService extends AbstractService {
     private BufferedImage renderingBuffer = null;
     private JFrame frame;
 
-
-    protected RenderingService(App app) {
+    public RenderingService(App app) {
         super(app);
     }
 
@@ -45,7 +45,9 @@ public class RenderingService extends AbstractService {
         Dimension windowSize = cs.getValue("app.render.window.size");
         String windowTitle = cs.getValue("app.window.title");
         int maxBuffers = cs.getValue("app.render.window.max.buffers");
+
         frame = new JFrame(windowTitle);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setPreferredSize(windowSize);
         frame.pack();
         frame.setVisible(true);
@@ -55,15 +57,18 @@ public class RenderingService extends AbstractService {
     @Override
     public void process(App app) {
         Graphics2D g = renderingBuffer.createGraphics();
-        g.setRenderingHints(
-                Map.of(
-                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON,
-                        RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON,
-                        RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-        renderingList.clear();
+        // configure rendering graphics API
+        g.setRenderingHints(Map.of(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON,
+                RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON,
+                RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
 
+        // Retrieve required services
         EntityManager entMgr = (EntityManager) app.getService(EntityManager.class.getSimpleName());
         renderingList = entMgr.getEntities().stream().filter(Entity::isActive).toList();
+
+        // clear the rendering buffer;
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, renderingBuffer.getWidth(), renderingBuffer.getHeight());
 
         // render all objects through camera viewport (if an active camera exists)
         if (Optional.ofNullable(cameraActive).isPresent()) {
@@ -88,8 +93,8 @@ public class RenderingService extends AbstractService {
 
     private void drawToFrame(BufferedImage renderingBuffer) {
         Graphics g = frame.getBufferStrategy().getDrawGraphics();
-        g.drawImage(renderingBuffer, 0, 0, frame.getWidth(), frame.getHeight(),
-                0, 0, renderingBuffer.getWidth(), renderingBuffer.getHeight(), null);
+        g.drawImage(renderingBuffer, 0, 0, frame.getWidth(), frame.getHeight(), 0, 0, renderingBuffer.getWidth(),
+                renderingBuffer.getHeight(), null);
         g.dispose();
         frame.getBufferStrategy().show();
     }
@@ -117,5 +122,9 @@ public class RenderingService extends AbstractService {
     @Override
     public Map<String, Object> getStats() {
         return Map.of();
+    }
+
+    public void addListener(InputService inputService) {
+        frame.addKeyListener(inputService);
     }
 }

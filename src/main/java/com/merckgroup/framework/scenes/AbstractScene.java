@@ -31,6 +31,10 @@ public abstract class AbstractScene implements Scene {
         return entities.values();
     }
 
+    protected Entity getEntity(String string) {
+        return entities.get(string);
+    }
+
     @Override
     public String getName() {
         return this.name;

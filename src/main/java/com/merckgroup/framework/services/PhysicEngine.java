@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.merckgroup.framework.App;
-import com.merckgroup.framework.math.Vector2d;
+import com.merckgroup.framework.components.GraphicComponent;
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.entities.Entity;
+import com.merckgroup.framework.math.Vector2d;
 
 /**
  * the {@link PhysicEngine} service is dedicated to compute Newton's laws on the
@@ -70,6 +71,10 @@ public class PhysicEngine extends AbstractService {
             pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
 
             pc.getForces().clear();
+
+            // update corresponding GraphicComponent shape for rendering.
+            GraphicComponent gc = e.getComponent(GraphicComponent.class);
+            gc.update(pc.getPosition(), pc.getSize());
         }
     }
 
