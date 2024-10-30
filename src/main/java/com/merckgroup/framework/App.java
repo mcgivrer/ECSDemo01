@@ -4,11 +4,12 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.merckgroup.framework.services.Service;
 
 /**
- * Simple Application strutucture to create java service based application
+ * Simple Application structure to create java-service-based application
  * processing.
  *
  * @author Frédéric Delorme
@@ -18,6 +19,7 @@ public class App {
     protected String appName = "App";
     private Map<String, Service> services = new HashMap<>();
     private boolean exit = false;
+    private boolean pause = false;
     private long maxLoopCount = -1;
 
     public App() {
@@ -39,9 +41,47 @@ public class App {
     private void process() {
         long loopCount = 0;
         while (!exit && !(maxLoopCount != -1 && loopCount > maxLoopCount)) {
-            services.values().stream().sorted(Comparator.comparing(Service::getPriority)).forEach(s -> s.process(this));
-            loopCount++;
+            if (!pause) {
+                services.values().stream().sorted(Comparator.comparing(Service::getPriority)).forEach(s -> s.process(this));
+                loopCount++;
+            }
         }
+    }
+
+    /**
+     * Aggregate all Services statistics into one Map.
+     *
+     * @return a {@link Map} of all statistics.
+     */
+    public Map<String, Object> getServicesStatistics() {
+        Map<String, Object> statistics = services.values().stream()
+                .map(Service::getStats) // Récupérer les statistiques de chaque service
+                .flatMap(stats -> stats.entrySet().stream()) // Aplatir les entrées de statistiques
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, // Clé de la statistique
+                        Map.Entry::getValue, // Valeur de la statistique
+                        (value1, value2) -> {
+                            // Combiner les valeurs si la clé existe déjà
+                            // Ici, vous pouvez définir comment combiner les valeurs, par exemple, en additionnant
+                            if (value1 instanceof Number && value2 instanceof Number) {
+                                return ((Number) value1).doubleValue() + ((Number) value2).doubleValue();
+                            }
+                            return value1; // Ou une autre logique de combinaison
+                        }
+                ));
+        return statistics;
+    }
+
+    /**
+     * Retrieve all statistics filtered on keys with keyFiltering.
+     *
+     * @param keyFiltering the string filtering key to collect only corresponding values.
+     * @return a {@link Map} of the corresponding statistics.
+     */
+    public Map<String, Object> filterStatisticsOn(String keyFiltering) {
+        return getServicesStatistics().entrySet()
+                .stream().filter((e) -> e.getKey().contains(keyFiltering))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private void dispose() {
@@ -78,8 +118,8 @@ public class App {
         this.services.put(s.getName(), s);
     }
 
-    public Service getService(String serviceName) {
-        return services.get(serviceName);
+    public <T extends Service> T getService(String serviceName) {
+        return (T) services.get(serviceName);
     }
 
     public void requestExit(boolean exit) {
@@ -103,5 +143,9 @@ public class App {
 
     public void setTestLoopCounter(long maxLoop) {
         this.maxLoopCount = maxLoop;
+    }
+
+    public void setPause(boolean p) {
+        this.pause = p;
     }
 }

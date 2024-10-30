@@ -2,11 +2,14 @@ package com.merckgroup.framework.components;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
+
+import com.merckgroup.framework.math.Vector2d;
 
 /**
  * the {@link GraphicComponent} class is a {@link Component} instance to deliver
- * graphics properties for drawing an {@link Entity}.
- * 
+ * graphics properties for drawing an {@link com.merckgroup.framework.entities.Entity}.
+ *
  * @author Frédéric Delorme
  * @since 0.0.1
  */
@@ -66,5 +69,9 @@ public class GraphicComponent implements Component {
     public GraphicComponent setShape(Shape shape) {
         this.shape = shape;
         return this;
+    }
+
+    public void update(Vector2d position, Vector2d size) {
+        this.shape = new Rectangle2D.Double(position.x, position.y, size.x, size.y);
     }
 }

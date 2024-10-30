@@ -8,12 +8,12 @@ import com.merckgroup.framework.App;
 
 public class InputService extends AbstractService implements KeyListener {
 
-    private boolean[] keys = new boolean[1024];
+    private final boolean[] keys = new boolean[1024];
     private long nbPressedKeys = 0;
     private long nbGetKeys = 0;
     private long nbEvents = 0;
 
-    protected InputService(App app) {
+    public InputService(App app) {
         super(app);
     }
 
@@ -24,8 +24,8 @@ public class InputService extends AbstractService implements KeyListener {
 
     @Override
     public void init(App app, String[] args) {
-        // TODO request for RenderingService and retrieve JFrame instance.
-        // and attach this service as a Keylistener.
+        RenderingService rs = app.getService(RenderingService.class.getSimpleName());
+        rs.addListener(this);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class InputService extends AbstractService implements KeyListener {
 
     @Override
     public int getPriority() {
-        return 4;
+        return 6;
     }
 
     @Override
@@ -62,6 +62,7 @@ public class InputService extends AbstractService implements KeyListener {
     public void keyPressed(KeyEvent e) {
         keys[e.getKeyCode()] = true;
         nbEvents++;
+        nbPressedKeys++;
     }
 
     @Override

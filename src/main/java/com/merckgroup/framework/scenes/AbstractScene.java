@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.merckgroup.framework.App;
+import com.merckgroup.framework.entities.Camera;
 import com.merckgroup.framework.entities.Entity;
 
 public abstract class AbstractScene implements Scene {
 
     protected Map<String, Entity> entities = new HashMap<>();
-    protected String name = "undefined";
+    protected String name;
     protected App app;
+
+    protected Camera activeCamera;
 
     protected String requestNextScene = "";
 
@@ -29,6 +32,10 @@ public abstract class AbstractScene implements Scene {
     @Override
     public Collection<Entity> getEntities() {
         return entities.values();
+    }
+
+    public Entity getEntity(String string) {
+        return entities.get(string);
     }
 
     @Override
@@ -50,5 +57,9 @@ public abstract class AbstractScene implements Scene {
 
     public void resetRequestChange() {
         this.requestNextScene = "";
+    }
+
+    public Camera getCamera() {
+        return this.activeCamera;
     }
 }

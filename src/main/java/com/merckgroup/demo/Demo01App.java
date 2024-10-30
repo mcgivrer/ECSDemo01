@@ -4,7 +4,9 @@ package com.merckgroup.demo;
 import com.merckgroup.framework.App;
 import com.merckgroup.framework.services.ConfigurationService;
 import com.merckgroup.framework.services.EntityManager;
+import com.merckgroup.framework.services.InputService;
 import com.merckgroup.framework.services.PhysicEngine;
+import com.merckgroup.framework.services.RenderingService;
 import com.merckgroup.framework.services.SceneManager;
 
 public class Demo01App extends App {
@@ -17,6 +19,8 @@ public class Demo01App extends App {
         add(new EntityManager(this));
         add(new PhysicEngine(this));
         add(new SceneManager(this));
+        add(new RenderingService(this));
+        add(new InputService(this));
     }
 
     public static void main(String[] args) {

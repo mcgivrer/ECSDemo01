@@ -2,12 +2,15 @@ package com.merckgroup.framework.services;
 
 import static com.merckgroup.framework.App.*;
 
+import java.awt.Dimension;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.merckgroup.framework.App;
+import com.merckgroup.framework.math.Vector2d;
 
 /**
  * This ConfigurationService class is {@link Service} implementation to load and
@@ -70,9 +73,8 @@ public class ConfigurationService extends AbstractService {
 
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.configuration.service.values", values,
-                "service.configuration.service.counter.getValue", nbGetValues,
-                "service.configuration.service.counter.config.file.entries", config.entrySet().size());
+        return Map.of("service.configuration.service.values", values, "service.configuration.service.counter.getValue",
+                nbGetValues, "service.configuration.service.counter.config.file.entries", config.entrySet().size());
     }
 
     /**
@@ -124,8 +126,37 @@ public class ConfigurationService extends AbstractService {
             case "app.scenes.default", "scene" -> {
                 values.put("app.scenes.default", value);
                 info(ConfigurationService.class, "Default scene is %s", value);
-
             }
+            case "app.render.buffer.size" -> {
+                String[] sizes = value.split("x");
+                Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[1]));
+                values.put("app.render.buffer.size", buffSize);
+                info(ConfigurationService.class, "Rendering buffer size set to %s", value);
+            }
+            case "app.render.window.size" -> {
+                String[] sizes = value.split("x");
+                Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[1]));
+                values.put("app.render.window.size", buffSize);
+                info(ConfigurationService.class, "Rendering window size set to %s", value);
+            }
+            case "app.physic.world.gravity" -> {
+                String[] sizes = value.split(",");
+                Vector2d gravity = new Vector2d(Double.parseDouble(sizes[0]), Double.parseDouble(sizes[1]));
+                values.put("app.physic.world.gravity", gravity);
+                info(ConfigurationService.class, "Physic Engine World gravity set to %s", gravity);
+            }
+            case "app.physic.world.play.area" -> {
+                String[] sizes = value.split("x");
+                Rectangle2D playArea = new Rectangle2D.Double(0, 0, Double.parseDouble(sizes[0]), Double.parseDouble(sizes[1]));
+                values.put("app.physic.world.play.area", playArea);
+                info(ConfigurationService.class, "Physic Engine World play area size set to %s", value);
+            }
+            case "app.render.window.max.buffers" -> {
+                int maxBuffers = Integer.parseInt(value);
+                values.put("app.render.window.max.buffers", maxBuffers);
+                info(ConfigurationService.class, "Rendering max buffer number set to %s", value);
+            }
+
             default -> {
                 warn(ConfigurationService.class, "Unknown argument %s:%s", key, value);
             }

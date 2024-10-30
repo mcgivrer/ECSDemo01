@@ -109,6 +109,7 @@ public class SceneManager extends AbstractService {
             currentScene.resetRequestChange();
             activate(nextSceneName);
         }
+        currentScene.update(app);
     }
 
     /**
@@ -130,5 +131,9 @@ public class SceneManager extends AbstractService {
     @Override
     public Map<String, Object> getStats() {
         return Map.of("service.scene.manager.default.scene", currentScene != null ? currentScene.getName() : "none");
+    }
+
+    public Scene getCurrentScene() {
+        return currentScene;
     }
 }
