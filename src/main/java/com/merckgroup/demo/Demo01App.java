@@ -3,11 +3,11 @@ package com.merckgroup.demo;
 
 import com.merckgroup.framework.App;
 import com.merckgroup.framework.services.ConfigurationService;
-import com.merckgroup.framework.services.EntityManager;
+import com.merckgroup.framework.services.EntityManagerService;
 import com.merckgroup.framework.services.InputService;
-import com.merckgroup.framework.services.PhysicEngine;
+import com.merckgroup.framework.services.PhysicEngineService;
 import com.merckgroup.framework.services.RenderingService;
-import com.merckgroup.framework.services.SceneManager;
+import com.merckgroup.framework.services.SceneManagerService;
 
 public class Demo01App extends App {
 
@@ -16,9 +16,9 @@ public class Demo01App extends App {
         // add all required services where priority are defined in the Service
         // implementation itself.
         add(new ConfigurationService(this));
-        add(new EntityManager(this));
-        add(new PhysicEngine(this));
-        add(new SceneManager(this));
+        add(new EntityManagerService(this));
+        add(new PhysicEngineService(this));
+        add(new SceneManagerService(this));
         add(new RenderingService(this));
         add(new InputService(this));
     }

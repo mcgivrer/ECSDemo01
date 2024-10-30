@@ -7,9 +7,10 @@ import java.util.List;
 import com.merckgroup.framework.math.Vector2d;
 import com.merckgroup.framework.entities.Entity;
 import com.merckgroup.framework.entities.Material;
+import com.merckgroup.framework.services.PhysicEngineService;
 
 /**
- * The {@link PhysicComponent} is a {@link Component} implementation used by the {@link com.merckgroup.framework.services.PhysicEngine} to process
+ * The {@link PhysicComponent} is a {@link Component} implementation used by the {@link PhysicEngineService} to process
  * position, velocity and acceleration.
  *
  * @author Frédéric Delorme
@@ -48,7 +49,7 @@ public class PhysicComponent implements Component {
 
     /**
      * Createa a blanck {@link PhysicComponent} ready to be used within an
-     * {@link Entity} fromp the {@link com.merckgroup.framework.services.PhysicEngine}.
+     * {@link Entity} fromp the {@link PhysicEngineService}.
      */
     public PhysicComponent() {
         material = Material.DEFAULT;

@@ -11,18 +11,18 @@ import com.merckgroup.framework.entities.Entity;
  *
  */
 
-public class EntityManager extends AbstractService {
+public class EntityManagerService extends AbstractService {
 
     private Map<String, Entity> entities = new ConcurrentHashMap<>();
 
-    public EntityManager(App app) {
+    public EntityManagerService(App app) {
         super(app);
         entities.clear();
     }
 
     @Override
     public String getName() {
-        return EntityManager.class.getSimpleName();
+        return EntityManagerService.class.getSimpleName();
     }
 
     @Override

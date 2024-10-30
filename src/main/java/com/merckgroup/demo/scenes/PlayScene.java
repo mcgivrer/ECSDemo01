@@ -8,6 +8,7 @@ import com.merckgroup.framework.App;
 import com.merckgroup.framework.components.GraphicComponent;
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.components.PriorityComponent;
+import com.merckgroup.framework.entities.Camera;
 import com.merckgroup.framework.entities.Entity;
 import com.merckgroup.framework.entities.Material;
 import com.merckgroup.framework.math.Vector2d;
@@ -37,6 +38,7 @@ public class PlayScene extends AbstractScene {
                         .setSize(16.0, 18.0))
                 .add(new PriorityComponent().setPriority(1));
 
+        setCamera(new Camera("cam01").setTarget(player,0.02));
         add(player);
     }
 

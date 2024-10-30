@@ -2,12 +2,12 @@ package com.merckgroup.framework.entities;
 
 import com.merckgroup.framework.components.PhysicComponent;
 import com.merckgroup.framework.math.Vector2d;
-import com.merckgroup.framework.services.PhysicEngine;
+import com.merckgroup.framework.services.PhysicEngineService;
 
 import java.awt.geom.Rectangle2D;
 
 /**
- * The {@link World} class is used by the {@link PhysicEngine} service to keep all entities from a
+ * The {@link World} class is used by the {@link PhysicEngineService} service to keep all entities from a
  * {@link com.merckgroup.framework.scenes.Scene} into a limited area and apply some common forces on any contained {@link Entity}.
  *
  * @author Frédéric Delorme

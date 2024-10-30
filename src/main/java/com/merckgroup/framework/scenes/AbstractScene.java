@@ -62,4 +62,8 @@ public abstract class AbstractScene implements Scene {
     public Camera getCamera() {
         return this.activeCamera;
     }
+
+    public void setCamera(Camera cam) {
+        this.activeCamera = cam;
+    }
 }

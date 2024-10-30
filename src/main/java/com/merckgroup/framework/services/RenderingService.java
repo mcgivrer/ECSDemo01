@@ -23,7 +23,7 @@ public class RenderingService extends AbstractService {
     private Camera cameraActive;
     private BufferedImage renderingBuffer = null;
     private JFrame frame;
-    private SceneManager scnMgr;
+    private SceneManagerService scnMgr;
 
     public RenderingService(App app) {
         super(app);
@@ -84,7 +84,7 @@ public class RenderingService extends AbstractService {
             }
         });
 
-        scnMgr = app.getService(SceneManager.class.getSimpleName());
+        scnMgr = app.getService(SceneManagerService.class.getSimpleName());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class RenderingService extends AbstractService {
                 RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
 
         // Retrieve required services
-        EntityManager entMgr = (EntityManager) app.getService(EntityManager.class.getSimpleName());
+        EntityManagerService entMgr = (EntityManagerService) app.getService(EntityManagerService.class.getSimpleName());
         renderingList = entMgr.getEntities().stream().filter(Entity::isActive).toList();
 
         // Clear the rendering buffer;
@@ -131,8 +131,9 @@ public class RenderingService extends AbstractService {
         Graphics g = frame.getBufferStrategy().getDrawGraphics();
         g.drawImage(renderingBuffer, 0, 0, frame.getWidth(), frame.getHeight(), 0, 0, renderingBuffer.getWidth(),
                 renderingBuffer.getHeight(), null);
-        g.dispose();
         frame.getBufferStrategy().show();
+        g.dispose();
+
     }
 
     private void drawEntity(Graphics2D g, Entity e) {

@@ -1,28 +1,27 @@
 package com.merckgroup.framework.services;
 
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.merckgroup.framework.App;
 import com.merckgroup.framework.components.GraphicComponent;
 import com.merckgroup.framework.components.PhysicComponent;
+import com.merckgroup.framework.components.TargetComponent;
+import com.merckgroup.framework.entities.Camera;
 import com.merckgroup.framework.entities.Entity;
 import com.merckgroup.framework.entities.World;
 import com.merckgroup.framework.math.Vector2d;
 
 /**
- * the {@link PhysicEngine} service is dedicated to compute Newton's laws on the
- * active Entities from the {@link EntityManager}.
+ * the {@link PhysicEngineService} service is dedicated to compute Newton's laws on the
+ * active Entities from the {@link EntityManagerService}.
  *
  * @author Frédéric Delorme
  * @since 0.0.1
  */
-public class PhysicEngine extends AbstractService {
+public class PhysicEngineService extends AbstractService {
 
-    private EntityManager eMgr;
+    private EntityManagerService eMgr;
     private long currentTime = 0;
     private int nbUpdatedObjects = 0;
 
@@ -30,7 +29,7 @@ public class PhysicEngine extends AbstractService {
             new Vector2d(0, -0.981),
             new Rectangle2D.Double(0, 0, 320, 200));
 
-    public PhysicEngine(App app) {
+    public PhysicEngineService(App app) {
         super(app);
     }
 
@@ -44,7 +43,7 @@ public class PhysicEngine extends AbstractService {
         ConfigurationService config = app.getService(ConfigurationService.class.getSimpleName());
         world.setGravity(config.getValue("app.physic.world.gravity"));
         world.setPlayArea(config.getValue("app.physic.world.play.area"));
-        eMgr = app.getService(EntityManager.class.getSimpleName());
+        eMgr = app.getService(EntityManagerService.class.getSimpleName());
         currentTime = System.currentTimeMillis();
     }
 
@@ -60,7 +59,20 @@ public class PhysicEngine extends AbstractService {
                 updateEntity(elapsed, e);
                 nbUpdatedObjects++;
             });
+            SceneManagerService scnMgr = app.getService(SceneManagerService.class.getSimpleName());
+            if (Optional.ofNullable(scnMgr.getCurrentScene().getCamera()).isPresent()) {
+                Camera cam = scnMgr.getCurrentScene().getCamera();
+                processCamera(cam);
+            }
         }
+    }
+
+    private void processCamera(Camera cam) {
+        PhysicComponent camPC = cam.getComponent(PhysicComponent.class);
+        TargetComponent camTC = cam.getComponent(TargetComponent.class);
+        PhysicComponent targetPC = camTC.getTarget().getComponent(PhysicComponent.class);
+
+        camPC.setPosition(targetPC.getPosition().substract(camPC.getPosition()).multiply(0.5));
     }
 
     /**

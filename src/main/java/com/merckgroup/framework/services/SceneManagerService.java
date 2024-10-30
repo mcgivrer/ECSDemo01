@@ -11,7 +11,7 @@ import com.merckgroup.framework.App;
 import com.merckgroup.framework.scenes.Scene;
 
 /**
- * The {@link SceneManager} class is a {@link Service} implementation to manage
+ * The {@link SceneManagerService} class is a {@link Service} implementation to manage
  * {@link Scene] , starting by loading the required scene according to the
  * configuration keys <code>app.scenes.list</code> and
  * <code>app.scenes.default</code> respectively the list of scene to me managed
@@ -22,7 +22,7 @@ import com.merckgroup.framework.scenes.Scene;
  * @since 0.0.1
  */
 
-public class SceneManager extends AbstractService {
+public class SceneManagerService extends AbstractService {
 
     /**
      * The internal list of Scene instances.
@@ -38,7 +38,7 @@ public class SceneManager extends AbstractService {
      *
      * @param app the parent {@link App} instance.
      */
-    public SceneManager(App app) {
+    public SceneManagerService(App app) {
         super(app);
     }
 
@@ -69,9 +69,9 @@ public class SceneManager extends AbstractService {
             currentScene = scenes.get(sceneName);
             currentScene.init(app);
             currentScene.create(app);
-            EntityManager entMgr = (EntityManager) app.getService(EntityManager.class.getSimpleName());
+            EntityManagerService entMgr = (EntityManagerService) app.getService(EntityManagerService.class.getSimpleName());
             entMgr.addAll(currentScene.getEntities());
-            info(SceneManager.class, "Scene %s loaded and activated", sceneName);
+            info(SceneManagerService.class, "Scene %s loaded and activated", sceneName);
         }
     }
 
@@ -90,16 +90,16 @@ public class SceneManager extends AbstractService {
                 Class<?> sceneClass = Class.forName(sceneClassName);
                 Scene sceneInstance = (Scene) sceneClass.getConstructor(App.class, String.class).newInstance(app, name);
                 scenes.put(name, sceneInstance);
-                info(SceneManager.class, "Scene [%s] named \"%s\" instantiated", sceneClassName, name);
+                info(SceneManagerService.class, "Scene [%s] named \"%s\" instantiated", sceneClassName, name);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                      | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                error(SceneManager.class, "Unable to instantiate Scene [%s] with name \"%s\"", sceneClassName, name);
+                error(SceneManagerService.class, "Unable to instantiate Scene [%s] with name \"%s\"", sceneClassName, name);
             }
         });
     }
 
     /**
-     * On a normal process pace, the {@link SceneManager} will detect is
+     * On a normal process pace, the {@link SceneManagerService} will detect is
      * {@link Scene} change is required.
      */
     @Override
