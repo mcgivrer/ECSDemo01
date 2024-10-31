@@ -8,6 +8,13 @@
       "type": "java",
       "name": "Demo01App",
       "request": "launch",
+      "mainClass": "com.snapgames.demo.Demo01App",
+      "projectName": "ECSDemo01_c8cf8860"
+    },
+    {
+      "type": "java",
+      "name": "Demo01App",
+      "request": "launch",
       "mainClass": "com.merckgroup.demo.Demo01App",
       "projectName": "ECSDemo01_c8cf8860"
     },

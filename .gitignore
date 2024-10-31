@@ -1,2 +1,10 @@
-/bin
+/.settings
+/.vscode
+/.idea
+*.iml
+.classpath
+.project
 /target
+**/*.class
+/out
+/src/main/javadoc/overview.html
