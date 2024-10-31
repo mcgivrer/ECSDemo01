@@ -93,7 +93,7 @@ NC='\033[0m'
 # Paths
 export SRC=src
 export LIBS=lib
-export LIB_TEST=$LIBS/test/junit-platform-console-standalone-1.10.1.jar
+export LIB_TEST=$LIBS/test/junit-platform-console-standalone-1.11.3.jar
 export LIB_CHECKSTYLES=$LIBS/tools/checkstyle-10.12.3-all.jar
 export TARGET=target
 export BUILD=$TARGET/build

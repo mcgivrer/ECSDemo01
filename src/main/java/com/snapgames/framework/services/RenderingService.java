@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.snapgames.framework.App;
 import com.snapgames.framework.components.GraphicComponent;
 import com.snapgames.framework.components.PhysicComponent;
 import com.snapgames.framework.components.PriorityComponent;
+import com.snapgames.framework.components.TextComponent;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
 
@@ -161,6 +163,18 @@ public class RenderingService extends AbstractService {
                 g.setColor(Color.ORANGE);
                 g.draw(gc.getShape());
             }
+        }
+        if (e.containsComponent(TextComponent.class)) {
+            TextComponent tc = e.getComponent(TextComponent.class);
+            PhysicComponent pc = e.getComponent(PhysicComponent.class);
+            g.setColor(gc.getColor());
+            g.setFont(tc.getTextFont());
+            g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
+            int textHeight = g.getFontMetrics().getHeight();
+            int textWidth = g.getFontMetrics().stringWidth(tc.getText());
+            pc.setSize(textWidth, textHeight);
+            gc.setShape(
+                    new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY(), textWidth, textHeight));
         }
     }
 
