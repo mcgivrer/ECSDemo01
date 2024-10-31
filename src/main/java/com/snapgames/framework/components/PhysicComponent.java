@@ -10,8 +10,8 @@ import com.snapgames.framework.math.Vector2d;
 import com.snapgames.framework.services.PhysicEngineService;
 
 /**
- * The {@link PhysicComponent} is a {@link Component} implementation used by the {@link PhysicEngineService} to process
- * position, velocity and acceleration.
+ * The {@link PhysicComponent} is a {@link Component} implementation used by the
+ * {@link PhysicEngineService} to process position, velocity and acceleration.
  *
  * @author Frédéric Delorme
  * @since 0.0.1
@@ -25,6 +25,8 @@ public class PhysicComponent implements Component {
      * {@link Entity} size in a 2D world
      */
     private Vector2d size = new Vector2d();
+
+    private PhysicType type = PhysicType.DYNAMIC;
     /**
      * {@link Entity}'s velocity.
      */
@@ -45,6 +47,10 @@ public class PhysicComponent implements Component {
      * The mass of the {@link Entity} according to the Newton's physic world.
      */
     private double mass;
+
+    /**
+     * Bounding Box for the parent Entity.
+     */
     private Rectangle2D bbox = new Rectangle2D.Double();
 
     /**
@@ -163,17 +169,53 @@ public class PhysicComponent implements Component {
         return size;
     }
 
+    /**
+     * Set the size for this {@link PhysicComponent}.
+     * 
+     * @param w the width for the Entity having this {@link PhysicComponent}.
+     * @param h the height for the Entity having this {@link PhysicComponent}.
+     * @return the updated {@link PhysicComponent}.
+     */
     public PhysicComponent setSize(double w, double h) {
         this.size = new Vector2d(w, h);
         update(position, size);
         return this;
     }
 
+    /**
+     * Update the bounding box of this {@link PhysicComponent} according to its
+     * position and size.
+     * 
+     * @param position
+     * @param size
+     */
     private void update(Vector2d position, Vector2d size) {
         this.bbox.setRect(position.getX(), position.getY(), size.getX(), size.getY());
     }
 
+    /**
+     * return the BoundingBox for this {@link PhysicComponent}.
+     * 
+     * @return the corresponding Rectangle2D
+     */
     public Rectangle2D getBBox() {
         return bbox;
     }
+
+    /**
+     * @return PhysicType return the type
+     */
+    public PhysicType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     * @return the updated {@link PhysicComponent}.
+     */
+    public PhysicComponent setType(PhysicType type) {
+        this.type = type;
+        return this;
+    }
+
 }
