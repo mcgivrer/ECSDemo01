@@ -7,7 +7,9 @@ import java.awt.geom.Rectangle2D;
 import com.snapgames.framework.App;
 import com.snapgames.framework.components.GraphicComponent;
 import com.snapgames.framework.components.PhysicComponent;
+import com.snapgames.framework.components.PhysicType;
 import com.snapgames.framework.components.PriorityComponent;
+import com.snapgames.framework.components.TextComponent;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
 import com.snapgames.framework.entities.Material;
@@ -37,9 +39,22 @@ public class PlayScene extends AbstractScene {
                         .setPosition(new Vector2d(100.0, 100.0))
                         .setSize(16.0, 18.0))
                 .add(new PriorityComponent().setPriority(1));
-
-        setCamera(new Camera("cam01").setViewport(320,200).setTarget(player,0.002));
+        setCamera(new Camera("cam01").setViewport(320, 200).setTarget(player, 0.002));
         add(player);
+
+        Entity score = new Entity("score")
+                .add(new GraphicComponent()
+                        .setColor(Color.WHITE)
+                        .setStickToViewport(true))
+                .add(new PhysicComponent()
+                        .setMaterial(Material.DEFAULT)
+                        .setMass(1.0)
+                        .setPosition(new Vector2d(10.0, 32.0))
+                        .setType(PhysicType.STATIC))
+                .add(new TextComponent()
+                    .setText("00000"))
+                .add(new PriorityComponent().setPriority(2));
+        add(score);
     }
 
     @Override

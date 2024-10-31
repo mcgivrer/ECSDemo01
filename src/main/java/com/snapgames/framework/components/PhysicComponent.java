@@ -47,6 +47,10 @@ public class PhysicComponent implements Component {
      * The mass of the {@link Entity} according to the Newton's physic world.
      */
     private double mass;
+
+    /**
+     * Bounding Box for the parent Entity.
+     */
     private Rectangle2D bbox = new Rectangle2D.Double();
 
     /**
