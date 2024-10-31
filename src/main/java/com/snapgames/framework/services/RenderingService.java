@@ -176,10 +176,6 @@ public class RenderingService extends AbstractService {
                 g.setColor(gc.getColor());
                 g.draw(gc.getShape());
             }
-            if (app.isDebugLevelGreaterThan(0)) {
-                g.setColor(Color.ORANGE);
-                g.draw(gc.getShape());
-            }
         }
         if (e.containsComponent(TextComponent.class)) {
             TextComponent tc = e.getComponent(TextComponent.class);
@@ -195,10 +191,6 @@ public class RenderingService extends AbstractService {
             gc.setShape(new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY() - textHeight, textWidth,
                     textHeight));
 
-            if (app.isDebugLevelGreaterThan(0)) {
-                g.setColor(Color.ORANGE);
-                g.draw(gc.getShape());
-            }
         }
         if (e.containsComponent(TextComponent.class)) {
             TextComponent tc = e.getComponent(TextComponent.class);
@@ -210,7 +202,12 @@ public class RenderingService extends AbstractService {
             int textWidth = g.getFontMetrics().stringWidth(tc.getText());
             pc.setSize(textWidth, textHeight);
             gc.setShape(
-                    new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY(), textWidth, textHeight));
+                    new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY()-textHeight, textWidth, textHeight));
+        }
+
+        if (app.isDebugLevelGreaterThan(0)) {
+            g.setColor(Color.ORANGE);
+            g.draw(gc.getShape());
         }
     }
 
