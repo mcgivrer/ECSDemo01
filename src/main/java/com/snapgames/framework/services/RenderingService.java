@@ -200,6 +200,18 @@ public class RenderingService extends AbstractService {
                 g.draw(gc.getShape());
             }
         }
+        if (e.containsComponent(TextComponent.class)) {
+            TextComponent tc = e.getComponent(TextComponent.class);
+            PhysicComponent pc = e.getComponent(PhysicComponent.class);
+            g.setColor(gc.getColor());
+            g.setFont(tc.getTextFont());
+            g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
+            int textHeight = g.getFontMetrics().getHeight();
+            int textWidth = g.getFontMetrics().stringWidth(tc.getText());
+            pc.setSize(textWidth, textHeight);
+            gc.setShape(
+                    new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY(), textWidth, textHeight));
+        }
     }
 
     @Override

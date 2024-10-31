@@ -55,7 +55,7 @@ public class PhysicEngineService extends AbstractService {
         nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
-        double elapsed = (currentTime - previousTime);
+        double elapsed = currentTime - previousTime;
         if (elapsed > 0) {
             allEntities.stream().forEach(e -> {
                 updateEntity(elapsed, e);
