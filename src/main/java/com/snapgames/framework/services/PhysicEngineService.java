@@ -55,7 +55,7 @@ public class PhysicEngineService extends AbstractService {
         nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
-        long elapsed = currentTime - previousTime;
+        double elapsed = currentTime - previousTime;
         if (elapsed > 0) {
             allEntities.stream().sorted().forEach(e -> {
                 updateEntity(elapsed, e);
@@ -65,17 +65,28 @@ public class PhysicEngineService extends AbstractService {
             if (Optional.ofNullable(scnMgr.getCurrentScene()).isPresent()
                     && Optional.ofNullable(scnMgr.getCurrentScene().getCamera()).isPresent()) {
                 Camera cam = scnMgr.getCurrentScene().getCamera();
-                processCamera(cam);
+                processCamera(cam, elapsed);
             }
         }
     }
 
-    private void processCamera(Camera cam) {
+    private void processCamera(Camera cam, double elapsed) {
         PhysicComponent camPC = cam.getComponent(PhysicComponent.class);
         TargetComponent camTC = cam.getComponent(TargetComponent.class);
         PhysicComponent targetPC = camTC.getTarget().getComponent(PhysicComponent.class);
 
-        camPC.setPosition(targetPC.getPosition().substract(camPC.getSize()).multiply(0.5));
+        // cam =cam.pos + (target.pos-cam.pos + (target.size+cam.viewport) *
+        // 0.5))*tweenFactor*elapsed
+
+        camPC.setPosition(camPC.getPosition()
+                .add(
+                    targetPC.getPosition()
+                        .add(targetPC.getSize().multiply(0.5)
+                            .substract(camPC.getSize().multiply(0.5))
+                            .substract(camPC.getPosition()))
+                            .multiply(camTC.getTweenFactor() * Math.min(elapsed, 1))
+                        )
+                    );
     }
 
     /**
@@ -97,15 +108,15 @@ public class PhysicEngineService extends AbstractService {
      * @param elapsed the elapsed time since previous call (in milliseconds)
      * @param e       the {@link Entity} to be updated.
      */
-    private void updateEntity(long elapsed, Entity e) {
+    private void updateEntity(double elapsed, Entity e) {
         e.update(elapsed);
         if (e.containsComponent(PhysicComponent.class)) {
             PhysicComponent pc = (PhysicComponent) e.getComponent(PhysicComponent.class);
 
             applyWorldRules(pc, world);
 
-            pc.setAcceleration(new Vector2d().addAll(pc.getForces()));
-            pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)));
+            pc.setAcceleration(new Vector2d().addAll(pc.getForces()).maximize(0.5));
+            pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(1.0));
             pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
 
             pc.getForces().clear();
@@ -178,6 +189,10 @@ public class PhysicEngineService extends AbstractService {
     @Override
     public Map<String, Object> getStats() {
         return Map.of("service.physic.engine.object.counter", nbUpdatedObjects);
+    }
+
+    public World getWorld() {
+        return this.world;
     }
 
 }

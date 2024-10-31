@@ -44,7 +44,8 @@ public class App {
         long loopCount = 0;
         while (!exit && !(maxLoopCount != -1 && loopCount > maxLoopCount)) {
             if (!pause) {
-                services.values().stream().sorted(Comparator.comparing(Service::getPriority)).forEach(s -> s.process(this));
+                services.values().stream().sorted(Comparator.comparing(Service::getPriority))
+                        .forEach(s -> s.process(this));
                 loopCount++;
             }
         }
@@ -56,33 +57,32 @@ public class App {
      * @return a {@link Map} of all statistics.
      */
     public Map<String, Object> getServicesStatistics() {
-        Map<String, Object> statistics = services.values().stream()
-                .map(Service::getStats) // Récupérer les statistiques de chaque service
+        Map<String, Object> statistics = services.values().stream().map(Service::getStats) // Récupérer les statistiques
+                                                                                           // de chaque service
                 .flatMap(stats -> stats.entrySet().stream()) // Aplatir les entrées de statistiques
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, // Clé de la statistique
+                .collect(Collectors.toMap(Map.Entry::getKey, // Clé de la statistique
                         Map.Entry::getValue, // Valeur de la statistique
                         (value1, value2) -> {
                             // Combiner les valeurs si la clé existe déjà
-                            // Ici, vous pouvez définir comment combiner les valeurs, par exemple, en additionnant
+                            // Ici, vous pouvez définir comment combiner les valeurs, par exemple, en
+                            // additionnant
                             if (value1 instanceof Number && value2 instanceof Number) {
                                 return ((Number) value1).doubleValue() + ((Number) value2).doubleValue();
                             }
                             return value1; // Ou une autre logique de combinaison
-                        }
-                ));
+                        }));
         return statistics;
     }
 
     /**
      * Retrieve all statistics filtered on keys with keyFiltering.
      *
-     * @param keyFiltering the string filtering key to collect only corresponding values.
+     * @param keyFiltering the string filtering key to collect only corresponding
+     *                         values.
      * @return a {@link Map} of the corresponding statistics.
      */
     public Map<String, Object> filterStatisticsOn(String keyFiltering) {
-        return getServicesStatistics().entrySet()
-                .stream().filter((e) -> e.getKey().contains(keyFiltering))
+        return getServicesStatistics().entrySet().stream().filter((e) -> e.getKey().contains(keyFiltering))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -153,5 +153,9 @@ public class App {
 
     public boolean isDebugLevelGreaterThan(int debugLevel) {
         return debug > debugLevel;
+    }
+
+    public void setDebugLevel(int dl) {
+        this.debug = dl;
     }
 }

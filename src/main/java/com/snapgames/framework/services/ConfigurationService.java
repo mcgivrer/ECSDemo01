@@ -105,7 +105,9 @@ public class ConfigurationService extends AbstractService {
                 info(ConfigurationService.class, "Configuration file name set to %s", defaultConfigurationFileName);
             }
             case "app.debug.level", "debuglevel", "dl" -> {
-                values.put("app.debug.level", Integer.parseInt(value));
+                int dl = Integer.parseInt(value);
+                values.put("app.debug.level", dl);
+                app.setDebugLevel(dl);
                 info(ConfigurationService.class, "Debug Level set to %s (value from 0 to 6)", value);
             }
             case "app.debug.counter", "testcounter", "tc" -> {

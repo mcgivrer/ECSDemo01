@@ -4,7 +4,6 @@ import java.awt.geom.Rectangle2D;
 
 import com.snapgames.framework.components.PhysicComponent;
 import com.snapgames.framework.components.TargetComponent;
-import com.snapgames.framework.math.Vector2d;
 
 public class Camera extends Entity {
     public Rectangle2D viewport = new Rectangle2D.Double(0, 0, 320, 200);
@@ -14,7 +13,6 @@ public class Camera extends Entity {
         add(new TargetComponent());
         add(new PhysicComponent());
     }
-
 
     public boolean hasEntityInView(Entity e) {
         if (e.containsComponent(PhysicComponent.class)) {
@@ -45,7 +43,12 @@ public class Camera extends Entity {
 
     public Camera setViewport(int w, int h) {
         PhysicComponent pc = getComponent(PhysicComponent.class);
-        viewport.setRect(pc.getPosition().getX(), pc.getPosition().getY(), 320, 200);
+        viewport.setRect(pc.getPosition().getX(), pc.getPosition().getY(), w, h);
+        pc.setSize(w, h);
         return this;
+    }
+
+    public Rectangle2D getViewPort() {
+        return this.viewport;
     }
 }

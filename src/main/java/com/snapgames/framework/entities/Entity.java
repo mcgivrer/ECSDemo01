@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.snapgames.framework.components.Component;
-import com.snapgames.framework.components.PhysicComponent;
 
 public class Entity {
     /**
@@ -145,7 +144,7 @@ public class Entity {
      *
      * @param elapsed the elapsed tie since previous call.
      */
-    public void update(long elapsed) {
+    public void update(double elapsed) {
         if (duration != -1 && duration > 0) {
             if (lifeTime + elapsed < duration) {
                 lifeTime += elapsed;

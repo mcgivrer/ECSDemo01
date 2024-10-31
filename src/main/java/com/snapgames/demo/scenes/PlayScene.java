@@ -38,7 +38,7 @@ public class PlayScene extends AbstractScene {
                         .setSize(16.0, 18.0))
                 .add(new PriorityComponent().setPriority(1));
 
-        setCamera(new Camera("cam01").setViewport(320,200).setTarget(player,0.02));
+        setCamera(new Camera("cam01").setViewport(320,200).setTarget(player,0.002));
         add(player);
     }
 
@@ -49,7 +49,7 @@ public class PlayScene extends AbstractScene {
         PhysicComponent pc = player.getComponent(PhysicComponent.class);
 
         if (input.isKeyPressed(KeyEvent.VK_UP)) {
-            pc.getForces().add(new Vector2d(0, -1.2));
+            pc.getForces().add(new Vector2d(0, -0.99));
         }
         if (input.isKeyPressed(KeyEvent.VK_DOWN)) {
             pc.getForces().add(new Vector2d(0, 0.002));

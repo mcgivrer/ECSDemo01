@@ -70,12 +70,12 @@ public class RenderingService extends AbstractService {
 
             @Override
             public void windowIconified(WindowEvent e) {
-                //app.setPause(true);
+                // app.setPause(true);
             }
 
             @Override
             public void windowDeiconified(WindowEvent e) {
-                //app.setPause(false);
+                // app.setPause(false);
                 frame.repaint();
             }
 
@@ -94,6 +94,9 @@ public class RenderingService extends AbstractService {
     public void process(App app) {
         Graphics2D g = renderingBuffer.createGraphics();
         cameraActive = scnMgr.getCurrentScene().getCamera();
+
+        PhysicEngineService pes = app.getService(PhysicEngineService.class.getSimpleName());
+
         // Configure rendering graphics API
         g.setRenderingHints(Map.of(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON,
                 RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON,
@@ -120,6 +123,12 @@ public class RenderingService extends AbstractService {
             return Integer.compare(p1.getPriority(), p1.getPriority());
         }).forEach(e -> drawEntity(g, e));
 
+        // draw world limit in debug mode
+        if (app.isDebugLevelGreaterThan(0)) {
+            g.setColor(Color.DARK_GRAY);
+            g.draw(pes.getWorld().getPlayArea());
+        }
+
         // Move back to normal position (if an active camera exists)
         if (Optional.ofNullable(cameraActive).isPresent()) {
             PhysicComponent pc = cameraActive.getComponent(PhysicComponent.class);
@@ -134,10 +143,8 @@ public class RenderingService extends AbstractService {
         Graphics2D g = (Graphics2D) frame.getBufferStrategy().getDrawGraphics();
         g.setColor(Color.DARK_GRAY);
         g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
-        g.drawImage(renderingBuffer,
-                0, 0, frame.getWidth(), frame.getHeight(),
-                0, 0, renderingBuffer.getWidth(),renderingBuffer.getHeight(),
-                null);
+        g.drawImage(renderingBuffer, 0, 0, frame.getWidth(), frame.getHeight(), 0, 0, renderingBuffer.getWidth(),
+                renderingBuffer.getHeight(), null);
         frame.getBufferStrategy().show();
         g.dispose();
 
