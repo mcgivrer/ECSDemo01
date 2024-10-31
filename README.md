@@ -1,18 +1,45 @@
-## Getting Started
+# README ECSDemo01
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+[![Gitea action build](http://nextserver01:4000/frederic/ECSDemo01/actions/workflows/build.yml/badge.svg?branch=develop)](http://nextserver01:4000/frederic/ECSDemo01/actions?workflow=build.yml&actor=0&status=0 "build on /develop")
 
-## Folder Structure
+## Context
 
-The workspace contains two folders by default, where:
+This is the readme file for "ECSDemo01" tutorial projects (0.0.2) where building a simple 2D game framework step by step
+by adding features, with a moderate ramp-up on complexity.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+The project architecture is based on the [ECS](https://en.wikipedia.org/wiki/Entity_component_system 
+"Discover what is ECS on wikipedia") principle (**E**ntity, **C**omponent, **S**ystem)
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+Hope this small project will help you on-boarding into the game development adventure with an common and accessible lanague.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Build
 
-## Dependency Management
+To build the project, just execute the following command line :
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+```bash
+build.sh a
+```
+
+## Run
+
+To execute the build project, just run it with :
+
+```bash
+build.sh r
+```
+
+or you can execute the command line :
+
+```bash
+java -jar target/ECSDemo01-0.0.2.jar
+```
+
+or lastly for the Linux machine owner or in a Windows Git Bash terminal :
+
+```bash
+target/build/ECSDemo01-0.0.2.run
+```
+
+Enjoy !
+
+Frédéric Delorme.
