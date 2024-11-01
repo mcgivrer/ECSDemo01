@@ -136,7 +136,7 @@ public class RenderingService extends AbstractService {
             GraphicComponent gc = e.getComponent(GraphicComponent.class);
             return e.isActive() && gc.isStickToViewport();
         }).toList();
-        // Draw all active sticked to viewport entities.
+        // Draw all active stuck to viewport entities.
         drawAllEntities(g, renderingList);
 
         // now copy buffer to window.
@@ -178,7 +178,7 @@ public class RenderingService extends AbstractService {
             if (e.containsComponent(TextComponent.class)) {
                 TextComponent tc = e.getComponent(TextComponent.class);
                 PhysicComponent pc = e.getComponent(PhysicComponent.class);
-                g.setColor(gc.getColor());
+                g.setColor(tc.getTextColor());
                 g.setFont(tc.getTextFont());
                 g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
                 int textHeight = g.getFontMetrics().getHeight();
@@ -204,6 +204,16 @@ public class RenderingService extends AbstractService {
                      iy += gridC.getTileHeight()) {
                     g.drawRect(0, (int) iy, (int) gridC.getBox().getWidth(), gridC.getTileHeight());
                 }
+            }
+            if (e.containsComponent(GaugeComponent.class)) {
+                PhysicComponent pc = e.getComponent(PhysicComponent.class);
+                GaugeComponent gg = e.getComponent(GaugeComponent.class);
+                g.setColor(gc.getFillColor());
+                gc.setShape(pc.getBBox());
+                g.fill(gc.getShape());
+                g.setColor(gc.getColor());
+                double width = pc.getSize().getX() * (gg.getMax() - gg.getMin()) / gg.getValue();
+                g.fill(new Rectangle2D.Double(pc.getPosition().getX() + 2, pc.getPosition().getY() + 2, (int) width-4, pc.getSize().getY() - 3));
             }
             if (app.isDebugLevelGreaterThan(0)) {
                 g.setColor(Color.ORANGE);

@@ -44,7 +44,8 @@ public class PlayScene extends AbstractScene {
 
         Entity score = new Entity("score")
                 .add(new GraphicComponent()
-                        .setColor(Color.WHITE)
+                        .setColor(null)
+                        .setFillColor(null)
                         .setStickToViewport(true))
                 .add(new PhysicComponent()
                         .setMaterial(Material.DEFAULT)
@@ -52,9 +53,25 @@ public class PlayScene extends AbstractScene {
                         .setPosition(new Vector2d(10.0, 32.0))
                         .setType(PhysicType.STATIC))
                 .add(new TextComponent()
-                        .setText("00000"))
+                        .setText("00000")
+                        .setTextColor(Color.WHITE))
                 .add(new PriorityComponent().setPriority(2));
         add(score);
+
+        Entity energyGauge = new Entity("energy")
+                .add(new GraphicComponent()
+                        .setColor(Color.RED)
+                        .setFillColor(new Color(0.3f,0.0f,0.0f))
+                        .setStickToViewport(true))
+                .add(new PhysicComponent()
+                        .setMaterial(Material.DEFAULT)
+                        .setMass(1.0)
+                        .setPosition(new Vector2d(270.0, 28.0))
+                        .setSize(40,6)
+                        .setType(PhysicType.STATIC))
+                .add(new GaugeComponent(100,0,100))
+                .add(new PriorityComponent().setPriority(2));
+        add(energyGauge);
 
         Entity grid = new Entity("grid")
                 .add(new GraphicComponent()
