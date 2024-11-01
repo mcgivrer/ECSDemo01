@@ -16,10 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 
 import com.snapgames.framework.App;
-import com.snapgames.framework.components.GraphicComponent;
-import com.snapgames.framework.components.PhysicComponent;
-import com.snapgames.framework.components.PriorityComponent;
-import com.snapgames.framework.components.TextComponent;
+import com.snapgames.framework.components.*;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
 
@@ -167,48 +164,53 @@ public class RenderingService extends AbstractService {
 
     private void drawEntity(Graphics2D g, Entity e) {
         GraphicComponent gc = e.getComponent(GraphicComponent.class);
-        if (Optional.ofNullable(gc).isPresent() && gc.getShape() != null) {
-            if (gc.getFillColor() != null) {
-                g.setColor(gc.getFillColor());
-                g.fill(gc.getShape());
+        if (Optional.ofNullable(gc).isPresent()) {
+            if (gc.getShape() != null) {
+                if (gc.getFillColor() != null) {
+                    g.setColor(gc.getFillColor());
+                    g.fill(gc.getShape());
+                }
+                if (gc.getColor() != null) {
+                    g.setColor(gc.getColor());
+                    g.draw(gc.getShape());
+                }
             }
-            if (gc.getColor() != null) {
+            if (e.containsComponent(TextComponent.class)) {
+                TextComponent tc = e.getComponent(TextComponent.class);
+                PhysicComponent pc = e.getComponent(PhysicComponent.class);
                 g.setColor(gc.getColor());
+                g.setFont(tc.getTextFont());
+                g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
+                int textHeight = g.getFontMetrics().getHeight();
+                int textWidth = g.getFontMetrics().stringWidth(tc.getText());
+                pc.setSize(textWidth, textHeight);
+                gc.setShape(
+                        new Rectangle2D.Double(
+                                pc.getPosition().getX(),
+                                pc.getPosition().getY() - textHeight,
+                                textWidth, textHeight));
+            }
+            if (e.containsComponent(GridComponent.class)) {
+                GridComponent gridC = e.getComponent(GridComponent.class);
+                g.setColor(gc.getColor());
+                gc.setShape(gridC.getBox());
+                for (double ix = gridC.getBox().getX();
+                     ix < gridC.getBox().getX() + gridC.getBox().getWidth();
+                     ix += gridC.getTileWidth()) {
+                    g.drawRect((int) ix, 0, gridC.getTileWidth(), (int) gridC.getBox().getHeight());
+                }
+                for (double iy = gridC.getBox().getY();
+                     iy < gridC.getBox().getY() + gridC.getBox().getHeight();
+                     iy += gridC.getTileHeight()) {
+                    g.drawRect(0, (int) iy, (int) gridC.getBox().getWidth(), gridC.getTileHeight());
+                }
+            }
+            if (app.isDebugLevelGreaterThan(0)) {
+                g.setColor(Color.ORANGE);
                 g.draw(gc.getShape());
             }
         }
-        if (e.containsComponent(TextComponent.class)) {
-            TextComponent tc = e.getComponent(TextComponent.class);
-            PhysicComponent pc = e.getComponent(PhysicComponent.class);
-            g.setColor(gc.getColor());
-            if (tc.getTextFont() != null) {
-                g.setFont(tc.getTextFont());
-            }
-            g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
-            int textHeight = g.getFontMetrics().getHeight();
-            int textWidth = g.getFontMetrics().stringWidth(tc.getText());
-            pc.setSize(textWidth, -textHeight);
-            gc.setShape(new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY() - textHeight, textWidth,
-                    textHeight));
 
-        }
-        if (e.containsComponent(TextComponent.class)) {
-            TextComponent tc = e.getComponent(TextComponent.class);
-            PhysicComponent pc = e.getComponent(PhysicComponent.class);
-            g.setColor(gc.getColor());
-            g.setFont(tc.getTextFont());
-            g.drawString(tc.getText(), (int) pc.getPosition().getX(), (int) pc.getPosition().getY());
-            int textHeight = g.getFontMetrics().getHeight();
-            int textWidth = g.getFontMetrics().stringWidth(tc.getText());
-            pc.setSize(textWidth, textHeight);
-            gc.setShape(
-                    new Rectangle2D.Double(pc.getPosition().getX(), pc.getPosition().getY()-textHeight, textWidth, textHeight));
-        }
-
-        if (app.isDebugLevelGreaterThan(0)) {
-            g.setColor(Color.ORANGE);
-            g.draw(gc.getShape());
-        }
     }
 
     @Override

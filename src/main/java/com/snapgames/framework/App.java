@@ -58,7 +58,7 @@ public class App {
      */
     public Map<String, Object> getServicesStatistics() {
         Map<String, Object> statistics = services.values().stream().map(Service::getStats) // Récupérer les statistiques
-                                                                                           // de chaque service
+                // de chaque service
                 .flatMap(stats -> stats.entrySet().stream()) // Aplatir les entrées de statistiques
                 .collect(Collectors.toMap(Map.Entry::getKey, // Clé de la statistique
                         Map.Entry::getValue, // Valeur de la statistique
@@ -78,7 +78,7 @@ public class App {
      * Retrieve all statistics filtered on keys with keyFiltering.
      *
      * @param keyFiltering the string filtering key to collect only corresponding
-     *                         values.
+     *                     values.
      * @return a {@link Map} of the corresponding statistics.
      */
     public Map<String, Object> filterStatisticsOn(String keyFiltering) {
@@ -126,6 +126,7 @@ public class App {
 
     public void requestExit(boolean exit) {
         this.exit = exit;
+        info(App.class, "exit has been requested");
     }
 
     /**
