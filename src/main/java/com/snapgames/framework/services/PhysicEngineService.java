@@ -57,7 +57,7 @@ public class PhysicEngineService extends AbstractService {
         currentTime = System.currentTimeMillis();
         double elapsed = currentTime - previousTime;
         if (elapsed > 0) {
-            allEntities.stream().sorted().forEach(e -> {
+            allEntities.stream().forEach(e -> {
                 updateEntity(elapsed, e);
                 nbUpdatedObjects++;
             });
@@ -79,14 +79,10 @@ public class PhysicEngineService extends AbstractService {
         // 0.5))*tweenFactor*elapsed
 
         camPC.setPosition(camPC.getPosition()
-                .add(
-                    targetPC.getPosition()
-                        .add(targetPC.getSize().multiply(0.5)
-                            .substract(camPC.getSize().multiply(0.5))
-                            .substract(camPC.getPosition()))
-                            .multiply(camTC.getTweenFactor() * Math.min(elapsed, 1))
-                        )
-                    );
+                .add(targetPC.getPosition()
+                        .add(targetPC.getSize().multiply(0.5).substract(camPC.getSize().multiply(0.5))
+                                .substract(camPC.getPosition()))
+                        .multiply(camTC.getTweenFactor() * Math.min(elapsed, 1))));
     }
 
     /**
@@ -114,31 +110,31 @@ public class PhysicEngineService extends AbstractService {
 
             PhysicComponent pc = (PhysicComponent) e.getComponent(PhysicComponent.class);
 
-            switch(pc.getType()){
-                case DYNAMIC->{
-                    applyWorldRules(pc, world);
+            switch (pc.getType()) {
+            case DYNAMIC -> {
+                applyWorldRules(pc, world);
 
-                    pc.setAcceleration(new Vector2d().addAll(pc.getForces()).maximize(0.5));
-                    pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(1.0));
-                    pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
+                pc.setAcceleration(new Vector2d().addAll(pc.getForces()).maximize(0.5));
+                pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(1.0));
+                pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
 
-                    pc.getForces().clear();
-                    constrainToWorldArea(pc, world);
+                pc.getForces().clear();
+                constrainToWorldArea(pc, world);
 
-                    // apply Material roughness on velocity
-                    pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
+                // apply Material roughness on velocity
+                pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
 
-                    // update the corresponding Entity's GraphicComponent shape for rendering.
-                    GraphicComponent gc = e.getComponent(GraphicComponent.class);
-                    gc.update(pc.getPosition(), pc.getSize());
+                // update the corresponding Entity's GraphicComponent shape for rendering.
+                GraphicComponent gc = e.getComponent(GraphicComponent.class);
+                gc.update(pc.getPosition(), pc.getSize());
 
-                }
-                case STATIC ->{
-
-                }
-                default ->{
-
-                }
+            }
+            case STATIC -> {
+                // TODO define processing for static entity
+            }
+            default -> {
+                // TODO define default processing (if any)
+            }
             }
         }
     }
