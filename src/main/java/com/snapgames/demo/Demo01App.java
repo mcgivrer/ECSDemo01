@@ -2,6 +2,7 @@
 package com.snapgames.demo;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.io.InputListener;
 import com.snapgames.framework.services.ConfigurationService;
 import com.snapgames.framework.services.EntityManagerService;
 import com.snapgames.framework.services.InputService;
@@ -9,7 +10,9 @@ import com.snapgames.framework.services.PhysicEngineService;
 import com.snapgames.framework.services.RenderingService;
 import com.snapgames.framework.services.SceneManagerService;
 
-public class Demo01App extends App {
+import java.awt.event.KeyEvent;
+
+public class Demo01App extends App implements InputListener {
 
     public Demo01App() {
         super();
@@ -20,7 +23,18 @@ public class Demo01App extends App {
         add(new PhysicEngineService(this));
         add(new SceneManagerService(this));
         add(new RenderingService(this));
-        add(new InputService(this));
+
+        InputService is = new InputService(this);
+        add(is);
+        is.register(this);
+    }
+
+
+    @Override
+    public void onKeyReleased(App app, KeyEvent ke) {
+        if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            requestExit(true);
+        }
     }
 
     public static void main(String[] args) {

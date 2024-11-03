@@ -1,9 +1,13 @@
 package com.snapgames.framework.components;
 
+import java.awt.*;
+
 public class GaugeComponent implements Component {
     double value = 0;
     double min = 0;
     double max = 100;
+
+    Color gaugeColor = Color.BLUE;
 
     public GaugeComponent() {
     }
@@ -18,23 +22,36 @@ public class GaugeComponent implements Component {
         return value;
     }
 
-    public void setValue(double value) {
+    public GaugeComponent setValue(double value) {
         this.value = value;
+        return this;
     }
 
     public double getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    public GaugeComponent setMin(double min) {
         this.min = min;
+        return this;
     }
 
     public double getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    public GaugeComponent setMax(double max) {
         this.max = max;
+        return this;
     }
+
+    public Color getGaugeColor() {
+        return gaugeColor;
+    }
+
+    public GaugeComponent setGaugeColor(Color c) {
+        this.gaugeColor = c;
+        return this;
+    }
+
 }

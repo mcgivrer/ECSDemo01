@@ -10,6 +10,7 @@ import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
 import com.snapgames.framework.entities.Material;
 import com.snapgames.framework.entities.World;
+import com.snapgames.framework.io.InputListener;
 import com.snapgames.framework.math.Vector2d;
 import com.snapgames.framework.scenes.AbstractScene;
 import com.snapgames.framework.services.InputService;
@@ -18,7 +19,7 @@ import com.snapgames.framework.services.PhysicEngineService;
 /**
  * Demo01 TitleScene to illustrate a Scene implementation.
  */
-public class PlayScene extends AbstractScene {
+public class PlayScene extends AbstractScene implements InputListener {
 
     public PlayScene(App app, String name) {
         super(app, name);
@@ -26,6 +27,9 @@ public class PlayScene extends AbstractScene {
 
     @Override
     public void create(App app) {
+        // register this Scene as an InputListener
+        InputService is = app.getService(InputService.class.getSimpleName());
+        is.register(this);
 
         World w = ((PhysicEngineService) app.getService(PhysicEngineService.class.getSimpleName())).getWorld();
         Entity player = new Entity("player")
@@ -60,16 +64,16 @@ public class PlayScene extends AbstractScene {
 
         Entity energyGauge = new Entity("energy")
                 .add(new GraphicComponent()
-                        .setColor(Color.RED)
-                        .setFillColor(new Color(0.3f,0.0f,0.0f))
+                        .setColor(Color.WHITE)
+                        .setFillColor(Color.BLACK)
                         .setStickToViewport(true))
                 .add(new PhysicComponent()
                         .setMaterial(Material.DEFAULT)
                         .setMass(1.0)
                         .setPosition(new Vector2d(270.0, 28.0))
-                        .setSize(40,6)
+                        .setSize(40, 6)
                         .setType(PhysicType.STATIC))
-                .add(new GaugeComponent(100,0,100))
+                .add(new GaugeComponent(100, 0, 100).setGaugeColor(Color.RED))
                 .add(new PriorityComponent().setPriority(2));
         add(energyGauge);
 
@@ -107,6 +111,24 @@ public class PlayScene extends AbstractScene {
         if (input.isKeyPressed(KeyEvent.VK_RIGHT)) {
             pc.getForces().add(new Vector2d(0.002, 0));
 
+        }
+    }
+
+    @Override
+    public void onKeyReleased(App app, KeyEvent ke) {
+        switch (ke.getKeyCode()) {
+            case KeyEvent.VK_D -> {
+                // switch debug level mode.
+                app.setDebugLevel(app.getDebugLevel() + 1 < 6 ? app.getDebugLevel() + 1 : 0);
+            }
+            case KeyEvent.VK_G -> {
+                // reverse gravity
+                PhysicEngineService pes = app.getService(PhysicEngineService.class.getSimpleName());
+                pes.getWorld().setGravity(pes.getWorld().getGravity().multiply(-1));
+            }
+            default -> {
+                // do nothing specific for any other keys.
+            }
         }
     }
 }

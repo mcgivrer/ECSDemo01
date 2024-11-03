@@ -211,9 +211,12 @@ public class RenderingService extends AbstractService {
                 g.setColor(gc.getFillColor());
                 gc.setShape(pc.getBBox());
                 g.fill(gc.getShape());
-                g.setColor(gc.getColor());
+                g.setColor(gg.getGaugeColor());
                 double width = pc.getSize().getX() * (gg.getMax() - gg.getMin()) / gg.getValue();
-                g.fill(new Rectangle2D.Double(pc.getPosition().getX() + 2, pc.getPosition().getY() + 2, (int) width-4, pc.getSize().getY() - 3));
+                g.fill(new Rectangle2D.Double(pc.getPosition().getX() + 2, pc.getPosition().getY() + 2, (int) width - 3, pc.getSize().getY() - 3));
+                g.setColor(gc.getColor());
+                g.draw(gc.getShape());
+
             }
             if (app.isDebugLevelGreaterThan(0)) {
                 g.setColor(Color.ORANGE);
