@@ -1,11 +1,13 @@
 package com.snapgames.framework;
 
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.snapgames.framework.io.InputListener;
 import com.snapgames.framework.services.Service;
 
 /**
@@ -15,7 +17,7 @@ import com.snapgames.framework.services.Service;
  * @author Frédéric Delorme
  * @since 0.0.1
  */
-public class App {
+public class App{
     protected String appName = "App";
     private Map<String, Service> services = new HashMap<>();
     private boolean exit = false;
@@ -159,4 +161,9 @@ public class App {
     public void setDebugLevel(int dl) {
         this.debug = dl;
     }
+
+    public int getDebugLevel() {
+        return debug;
+    }
+
 }
