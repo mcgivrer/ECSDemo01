@@ -136,7 +136,7 @@ public class RenderingService extends AbstractService {
             GraphicComponent gc = e.getComponent(GraphicComponent.class);
             return e.isActive() && gc.isStickToViewport();
         }).toList();
-        // Draw all active sticked to viewport entities.
+        // Draw all active stuck to viewport entities.
         drawAllEntities(g, renderingList);
 
         // now copy buffer to window.
