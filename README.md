@@ -43,3 +43,5 @@ target/build/ECSDemo01-0.0.2.run
 Enjoy !
 
 Frédéric Delorme.
+
+![Alt](https://repobeats.axiom.co/api/embed/b5a901b001053855668644f286f47c1c89c0ea65.svg "Repobeats analytics image")
