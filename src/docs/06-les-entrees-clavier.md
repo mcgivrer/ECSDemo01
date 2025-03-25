@@ -163,7 +163,7 @@ println("La touche directionnelle 'UP' est pressée.");
 
 Voici une représentation simplifiée, sous forme de diagramme UML avec PlantUML :
 
-```
+```plantuml
 @startuml
 class InputService {
     - boolean[] keys

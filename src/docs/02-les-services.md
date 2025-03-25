@@ -117,14 +117,125 @@ services.
 
 ### 3. Intégration avec l'instance de l'application (`App`)
 
-- Chaque service reçoit une référence de l'application parent (`App`) lors de son initialisation.
+- Chaque service reçoit une référence de l'application parente (`App`) lors de son initialisation.
 - Cela permet :
     - D'accéder à des ressources partagées.
     - De coordonner des opérations entre services.
 
+## Diagramme des classes
+
+```plantuml
+@startuml
+class App {
+- String appName
+- Map<String, Service> services
+- boolean exit
+- boolean pause
+- long maxLoopCount
++ void run(String[] args)
++ <T extends Service> T getService(String name)
+}
+
+interface Service {
++ String getName()
++ void init(App app, String[] args)
++ void process(App app)
++ void dispose(App app)
+}
+
+abstract class AbstractService implements Service {
+- App app
+- Map<String, Object> statistics
++ AbstractService(App app)
++ Map<String, Object> getStatistics()
+}
+
+class ConfigurationService extends AbstractService {
+- Map<String, Object> values
+- Properties config
+- String defaultConfigurationFileName
+}
+
+class EntityManagerService extends AbstractService {
+- Map<String, Entity> entities
++ void add(Entity entity)
++ Entity get(String name)
++ Collection<Entity> getEntities()
+}
+
+class InputService extends AbstractService {
+- boolean[] keys
+- List<InputListener> listeners
+}
+
+class PhysicEngineService extends AbstractService {
+- EntityManagerService eMgr
+- World world
+- int nbUpdatedObjects
+}
+
+class RenderingService extends AbstractService {
+- List<Entity> renderingList
+- Camera cameraActive
+- BufferedImage renderingBuffer
+- JFrame frame
+- SceneManagerService scnMgr
+}
+
+class SceneManagerService extends AbstractService {
+- Map<String, Scene> scenes
+- Scene currentScene
++ Scene getCurrentScene()
+}
+
+interface InputListener {
++ void onKeyPressed(App app, KeyEvent event)
++ void onKeyReleased(App app, KeyEvent event)
+}
+
+class Entity {
++ long id
++ UUID uuid
++ String name
++ void add(Component component)
++ <T extends Component> T getComponent(Class<T> type)
+}
+
+class Component {
+}
+
+class World {
+- Vector2d gravity
+- Rectangle2D playArea
+}
+
+class Scene {
+}
+
+App --> Service : "gère des"
+Service <|-- AbstractService
+AbstractService <|-- ConfigurationService
+AbstractService <|-- EntityManagerService
+AbstractService <|-- InputService
+AbstractService <|-- PhysicEngineService
+AbstractService <|-- RenderingService
+AbstractService <|-- SceneManagerService
+SceneManagerService --> Scene : "gère"
+RenderingService --> SceneManagerService : "utilise"
+RenderingService --> Entity : "rend les entités"
+InputService --> InputListener : "notifie les"
+EntityManagerService --> Entity : "gère"
+Entity --> Component : "contient des"
+PhysicEngineService --> World : "simule"
+PhysicEngineService --> EntityManagerService : "accède"
+Scene --|> RenderingService : "rend ou active"
+
+@enduml
+```
+
 ## Conclusion
 
 Le mécanisme des services basé sur les classes `Service`, `AbstractService` et `SceneManagerService` propose une
-architecture modulaire, extensible et orientée objets. Il permet de centraliser la gestion des fonctionnalités tout en
+architecture modulaire, extensible et orientés objets. Il permet de centraliser la gestion des fonctionnalités tout en
 isolant leur implémentation dans des composants indépendants. Ce design est particulièrement adapté aux systèmes
 complexes tels que les moteurs de jeux ou les frameworks applicatifs.
