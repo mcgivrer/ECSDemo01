@@ -152,4 +152,10 @@ public class Vector2d {
     public double getX() {
         return x;
     }
+
+    public Vector2d set(double x, double y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
 }

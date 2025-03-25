@@ -17,29 +17,82 @@ import com.snapgames.framework.entities.World;
 import com.snapgames.framework.math.Vector2d;
 
 /**
- * the {@link PhysicEngineService} service is dedicated to compute Newton's laws
- * on the active Entities from the {@link EntityManagerService}.
+ * PhysicEngineService is responsible for managing and updating the physics
+ * state of the application's world and entities. It handles physics-related
+ * computations such as Newtonian mechanics, collision constraints, and applies
+ * world rules (e.g., gravity, boundaries). This service operates within the
+ * application's lifecycle and integrates with other services like the
+ * EntityManagerService and SceneManagerService.
  *
  * @author Frédéric Delorme
- * @since 0.0.1
+ * @since 0.0.@
  */
 public class PhysicEngineService extends AbstractService {
 
+    /**
+     * The EntityManagerService instance responsible for managing entities
+     * in the application. This variable facilitates access to the core
+     * entity management functionality, including operations such as adding,
+     * retrieving, updating, and removing entities.
+     */
     private EntityManagerService eMgr;
+    /**
+     * The `currentTime` variable represents the last recorded timestamp
+     * in milliseconds. It is used internally to track and calculate time-dependent
+     * operations, such as processing physics updates or handling elapsed time
+     * calculations.
+     */
     private long currentTime = 0;
+    /**
+     * Represents the number of objects that have been updated during the physics
+     * processing in the {@link PhysicEngineService}.
+     * <p>
+     * This variable is used to track and count the total number of {@link Entity}
+     * objects that were successfully updated within a single processing cycle of
+     * the physics engine.
+     */
     private int nbUpdatedObjects = 0;
 
+    /**
+     * The {@code world} variable represents the instance of the {@link World} used in the
+     * {@link PhysicEngineService} to simulate physical interactions, apply forces such as
+     * gravity, and manage the spatial constraints within a defined play area for entities.
+     * <p>
+     * This particular instance initializes the {@link World} with a default gravity vector
+     * of {@code (0, -0.981)}, simulating a downward gravitational force, and a play area
+     * defined by a {@link Rectangle2D.Double} with width 320 and height 200.
+     */
     private World world = new World(new Vector2d(0, -0.981), new Rectangle2D.Double(0, 0, 320, 200));
 
+
+    static double cumulated = 0;
+
+    /**
+     * Creates an instance of the PhysicEngineService to manage physics-related
+     * computations and updates for the application.
+     *
+     * @param app the application instance that this service belongs to.
+     */
     public PhysicEngineService(App app) {
         super(app);
     }
 
+    /**
+     * Retrieves the name of the service.
+     *
+     * @return the simple name of the class implementing the service.
+     */
     @Override
     public String getName() {
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * Initializes the PhysicEngineService by setting up the necessary configuration and dependencies.
+     *
+     * @param app  the main application instance providing access to services and configuration.
+     * @param args an array of command-line arguments or additional initialization parameters.
+     */
     @Override
     public void init(App app, String[] args) {
         ConfigurationService config = app.getService(ConfigurationService.class.getSimpleName());
@@ -49,14 +102,23 @@ public class PhysicEngineService extends AbstractService {
         currentTime = System.currentTimeMillis();
     }
 
+    /**
+     * Processes the physics-related updates for the application, including entity
+     * behaviors and camera adjustments, based on elapsed time since the last update.
+     *
+     * @param app the main application instance providing access to services, resources,
+     *            and the scene manager for physics updates.
+     */
     @Override
     public void process(App app) {
+        double UPS = 120.0;
         long previousTime = currentTime;
         nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
         double elapsed = currentTime - previousTime;
-        if (elapsed > 0) {
+        cumulated += elapsed;
+        if (cumulated > 1000.0 / UPS) {
             allEntities.stream().forEach(e -> {
                 updateEntity(elapsed, e);
                 nbUpdatedObjects++;
@@ -67,9 +129,19 @@ public class PhysicEngineService extends AbstractService {
                 Camera cam = scnMgr.getCurrentScene().getCamera();
                 processCamera(cam, elapsed);
             }
+            cumulated = 0;
         }
     }
 
+    /**
+     * Adjusts the camera's position to smoothly follow its target entity based on the
+     * target's position, size, and the defined tweening factor. This computation also
+     * considers the elapsed time to ensure smooth and continuous motion.
+     *
+     * @param cam     the {@link Camera} instance whose position is being adjusted.
+     * @param elapsed the time elapsed since the last frame or update, used to calculate
+     *                the interpolation for smooth motion.
+     */
     private void processCamera(Camera cam, double elapsed) {
         PhysicComponent camPC = cam.getComponent(PhysicComponent.class);
         TargetComponent camTC = cam.getComponent(TargetComponent.class);
@@ -83,6 +155,7 @@ public class PhysicEngineService extends AbstractService {
                         .add(targetPC.getSize().multiply(0.5).substract(camPC.getSize().multiply(0.5))
                                 .substract(camPC.getPosition()))
                         .multiply(camTC.getTweenFactor() * Math.min(elapsed, 1))));
+        cam.update();
     }
 
     /**
@@ -111,30 +184,30 @@ public class PhysicEngineService extends AbstractService {
             PhysicComponent pc = (PhysicComponent) e.getComponent(PhysicComponent.class);
 
             switch (pc.getType()) {
-            case DYNAMIC -> {
-                applyWorldRules(pc, world);
+                case DYNAMIC -> {
+                    applyWorldRules(pc, world);
 
-                pc.setAcceleration(new Vector2d().addAll(pc.getForces()).maximize(0.5));
-                pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(1.0));
-                pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
+                    pc.setAcceleration(new Vector2d().addAll(pc.getForces()).multiply(1.0 / pc.getMass()).maximize(2.0));
+                    pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(4.0));
+                    pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
 
-                pc.getForces().clear();
-                constrainToWorldArea(pc, world);
+                    constrainToWorldArea(pc, world);
 
-                // apply Material roughness on velocity
-                pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
+                    // apply Material roughness on velocity
+                    pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
 
-                // update the corresponding Entity's GraphicComponent shape for rendering.
-                GraphicComponent gc = e.getComponent(GraphicComponent.class);
-                gc.update(pc.getPosition(), pc.getSize());
+                    // update the corresponding Entity's GraphicComponent shape for rendering.
+                    GraphicComponent gc = e.getComponent(GraphicComponent.class);
+                    gc.update(pc.getPosition(), pc.getSize());
 
-            }
-            case STATIC -> {
-                // TODO define processing for static entity
-            }
-            default -> {
-                // TODO define default processing (if any)
-            }
+                    pc.getForces().clear();
+                }
+                case STATIC -> {
+                    // TODO define processing for static entity
+                }
+                default -> {
+                    // TODO define default processing (if any)
+                }
             }
         }
     }
@@ -144,7 +217,7 @@ public class PhysicEngineService extends AbstractService {
      * {@link Entity}'s {@link PhysicComponent}.
      *
      * @param pc    the {@link PhysicComponent} from the {@link Entity} to be
-     *                  updated
+     *              updated
      * @param world the {@link World} instance to take into account.
      */
     private void applyWorldRules(PhysicComponent pc, World world) {
@@ -160,45 +233,85 @@ public class PhysicEngineService extends AbstractService {
      * {@link World}'s play area.
      *
      * @param pc    the {@link PhysicComponent} from the {@link Entity} to be
-     *                  updated
+     *              updated
      * @param world the {@link World} instance to take into account.
      */
     private void constrainToWorldArea(PhysicComponent pc, World world) {
         PhysicComponent worldPC = world.getComponent(PhysicComponent.class);
         Vector2d position = pc.getPosition();
+        Vector2d velocity = pc.getVelocity();
         Vector2d size = pc.getSize();
 
         Rectangle2D worldRect = worldPC.getBBox();
+        if (!world.getPlayArea().contains(position.x, position.y, size.x, size.y)) {
+            if (position.x < worldRect.getX()) {
+                position.x = worldRect.getX();
+                velocity = velocity.set(velocity.x * -worldPC.getMaterial().getElasticity(), velocity.y);
+            }
+            if (position.x + size.x > worldRect.getX() + worldRect.getWidth()) {
+                position.x = worldRect.getX() + worldRect.getWidth() - size.x;
+                velocity = velocity.set(velocity.x * -worldPC.getMaterial().getElasticity(), velocity.y);
 
-        if (position.x < worldRect.getX()) {
-            position.x = worldRect.getX();
+            }
+            if (position.y < worldRect.getY()) {
+                position.y = worldRect.getY();
+                velocity = velocity.set(velocity.x, velocity.y * -worldPC.getMaterial().getElasticity());
+            }
+            if (position.y + size.y > worldRect.getY() + worldRect.getHeight()) {
+                position.y = worldRect.getY() + worldRect.getHeight() - size.y;
+                velocity = velocity.set(velocity.x, velocity.y * -worldPC.getMaterial().getElasticity());
+            }
+            pc.setPosition(position);
+            pc.setVelocity(velocity);
         }
-        if (position.x + size.x > worldRect.getX() + worldRect.getWidth()) {
-            position.x = worldRect.getX() + worldRect.getWidth() - size.x;
-        }
-        if (position.y < worldRect.getY()) {
-            position.y = worldRect.getY();
-        }
-        if (position.y + size.y > worldRect.getY() + worldRect.getHeight()) {
-            position.y = worldRect.getY() + worldRect.getHeight() - size.y;
-        }
-        pc.setPosition(position);
     }
 
+    /**
+     * Retrieves the priority level of this service. The priority determines
+     * the execution order of services, with lower numbers indicating higher
+     * precedence.
+     *
+     * @return the priority level as an integer
+     */
     @Override
     public int getPriority() {
         return 2;
     }
 
+    /**
+     * Releases resources, performs clean-up operations, and ensures the proper
+     * shutdown of this PhysicEngineService instance. This method is called
+     * to free any resources or references held by the service before the
+     * application shuts down or the service is no longer needed.
+     *
+     * @param app the application instance associated with this service, used
+     *            to access shared resources or other application-level data
+     *            during the disposal process.
+     */
     @Override
     public void dispose(App app) {
     }
 
+    /**
+     * Retrieves the statistics of the PhysicEngineService, including the count of
+     * updated objects processed by the physics engine.
+     *
+     * @return a map containing statistical data for the service, where the keys
+     * represent the statistic names (e.g., "service.physic.engine.object.counter")
+     * and the values represent their respective values.
+     */
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.physic.engine.object.counter", nbUpdatedObjects);
+        return Map.of("updated", nbUpdatedObjects,
+                "UPS", 120);
     }
 
+    /**
+     * Retrieves the {@link World} instance managed by the {@code PhysicEngineService}.
+     *
+     * @return the current {@link World} instance, which contains the play area, gravity,
+     * and entities managed by the physics engine.
+     */
     public World getWorld() {
         return this.world;
     }

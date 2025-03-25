@@ -130,7 +130,7 @@ public class SceneManagerService extends AbstractService {
 
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.scene.manager.default.scene", currentScene != null ? currentScene.getName() : "none");
+        return Map.of("scene", currentScene != null ? currentScene.getName() : "none");
     }
 
     public Scene getCurrentScene() {
