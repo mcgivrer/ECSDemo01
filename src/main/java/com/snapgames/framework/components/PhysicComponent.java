@@ -10,8 +10,10 @@ import com.snapgames.framework.math.Vector2d;
 import com.snapgames.framework.services.PhysicEngineService;
 
 /**
- * The {@link PhysicComponent} is a {@link Component} implementation used by the
- * {@link PhysicEngineService} to process position, velocity and acceleration.
+ * The {@code PhysicComponent} class is responsible for managing the physical attributes
+ * and properties of an {@link Entity} within a 2D game or simulation. It allows managing
+ * the position, size, velocity, acceleration, forces, material, and bounding box of the entity.
+ * This component is specifically designed to be used with a physics engine.
  *
  * @author Frédéric Delorme
  * @since 0.0.1
@@ -171,7 +173,7 @@ public class PhysicComponent implements Component {
 
     /**
      * Set the size for this {@link PhysicComponent}.
-     * 
+     *
      * @param w the width for the Entity having this {@link PhysicComponent}.
      * @param h the height for the Entity having this {@link PhysicComponent}.
      * @return the updated {@link PhysicComponent}.
@@ -185,7 +187,7 @@ public class PhysicComponent implements Component {
     /**
      * Update the bounding box of this {@link PhysicComponent} according to its
      * position and size.
-     * 
+     *
      * @param position
      * @param size
      */
@@ -195,7 +197,7 @@ public class PhysicComponent implements Component {
 
     /**
      * return the BoundingBox for this {@link PhysicComponent}.
-     * 
+     *
      * @return the corresponding Rectangle2D
      */
     public Rectangle2D getBBox() {

@@ -85,11 +85,24 @@ public class InputService extends AbstractService implements KeyListener {
         return keys[vkCode];
     }
 
+    /**
+     * Handles the keyTyped event triggered when a key is typed. This method
+     * updates the internal counter for the number of key events processed.
+     *
+     * @param e the KeyEvent containing information about the typed key.
+     */
     @Override
     public void keyTyped(KeyEvent e) {
         nbEvents++;
     }
 
+    /**
+     * Handles the keyPressed event triggered when a key is pressed. This method
+     * updates the internal state, tracks the number of key press events, and
+     * notifies all registered InputListeners about the key press event.
+     *
+     * @param e the KeyEvent containing information about the pressed key.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         keys[e.getKeyCode()] = true;
@@ -98,6 +111,14 @@ public class InputService extends AbstractService implements KeyListener {
         listeners.forEach(il -> il.onKeyPressed(app, e));
     }
 
+    /**
+     * Handles the keyReleased event triggered when a key is released. This method
+     * updates the internal state by marking the key as released, increments the
+     * number of events, and notifies all registered InputListeners about the key
+     * release event.
+     *
+     * @param e the KeyEvent containing information about the released key.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;

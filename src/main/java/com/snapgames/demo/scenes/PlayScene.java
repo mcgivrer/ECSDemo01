@@ -17,7 +17,15 @@ import com.snapgames.framework.services.InputService;
 import com.snapgames.framework.services.PhysicEngineService;
 
 /**
- * Demo01 TitleScene to illustrate a Scene implementation.
+ * The PlayScene class represents a specific gameplay scene in the application.
+ * It extends the {@link AbstractScene} class and implements the {@link InputListener} interface
+ * to handle keyboard input and manage entities within the scene.
+ * <p>
+ * This class is responsible for initializing, rendering, updating entities, and managing user input.
+ * It includes pre-defined entities such as a player, score display, energy gauge, and a grid for the scene layout.
+ *
+ * @author Frédéric Delorme
+ * @since 0.0.1
  */
 public class PlayScene extends AbstractScene implements InputListener {
 
@@ -25,6 +33,15 @@ public class PlayScene extends AbstractScene implements InputListener {
         super(app, name);
     }
 
+    /**
+     * Initializes and configures the scene by creating and registering entities
+     * such as the player, score, energy gauge, and grid. Entities are set up with
+     * their respective components and added to the scene. It also configures the
+     * camera and other relevant elements necessary for the scene's operation.
+     *
+     * @param app the application instance providing access to services and
+     *            necessary resources for entity creation and registration.
+     */
     @Override
     public void create(App app) {
         // register this Scene as an InputListener
@@ -91,6 +108,14 @@ public class PlayScene extends AbstractScene implements InputListener {
         add(grid);
     }
 
+    /**
+     * Updates the current game scene by checking inputs and applying forces to the
+     * player's physical component based on the pressed keys.
+     *
+     * @param app the application instance providing access to services and game
+     *            entities. The method uses this parameter to fetch the input
+     *            service and the player's entity for processing updates.
+     */
     @Override
     public void update(App app) {
         InputService input = (InputService) app.getService(InputService.class.getSimpleName());
@@ -114,6 +139,13 @@ public class PlayScene extends AbstractScene implements InputListener {
         }
     }
 
+    /**
+     * Handles key release events within the PlayScene. Depending on the released key,
+     * this method performs specific actions such as toggling debug levels or reversing gravity.
+     *
+     * @param app the application instance providing access to services and resources for game processing.
+     * @param ke  the {@link KeyEvent} representing the key release event, which includes the key code to identify the action to perform.
+     */
     @Override
     public void onKeyReleased(App app, KeyEvent ke) {
         switch (ke.getKeyCode()) {

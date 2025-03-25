@@ -8,6 +8,16 @@ import java.util.UUID;
 
 import com.snapgames.framework.components.Component;
 
+/**
+ * The {@code Entity} class represents a base element in a system designed for managing
+ * entities with components and hierarchical relationships. Each {@link Entity} has
+ * a unique ID, a UUID, and can contain children and components. The {@link Entity}
+ * class supports hierarchical structure creation, component management, and lifecycle
+ * handling based on duration and lifetime.
+ *
+ * @author Frédéric Delorme
+ * @since 0.0.1
+ */
 public class Entity {
     /**
      * internale index entity counter.
@@ -154,18 +164,42 @@ public class Entity {
         }
     }
 
+    /**
+     * Retrieves a component of the specified type from the entity's list of components.
+     *
+     * @param <T>    the type of the component to retrieve, which must extend {@link Component}.
+     * @param class1 the class object representing the type of the component to retrieve.
+     * @return the first component in the entity's list of components that matches the specified type.
+     * @throws java.util.NoSuchElementException if no component of the specified type is found.
+     */
     public <T extends Component> T getComponent(Class<? extends Component> class1) {
         return (T) components.stream().filter(c -> c.getClass().equals(class1)).findFirst().get();
     }
 
+    /**
+     * Retrieves the list of components associated with this entity.
+     *
+     * @return a list of {@link Component} objects associated with this entity.
+     */
     public List<Component> getComponents() {
         return components;
     }
 
+    /**
+     * Checks if the entity contains a component of the specified class type.
+     *
+     * @param class1 the class object representing the type of the component to check for.
+     * @return {@code true} if a component of the specified class type exists in the entity, {@code false} otherwise.
+     */
     public boolean containsComponent(Class<? extends Component> class1) {
         return components.stream().anyMatch(c -> c.getClass().equals(class1));
     }
 
+    /**
+     * Checks if the current {@link Entity} is active.
+     *
+     * @return {@code true} if the entity is active, {@code false} otherwise.
+     */
     public boolean isActive() {
         return active;
     }

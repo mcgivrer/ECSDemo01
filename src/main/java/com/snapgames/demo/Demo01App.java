@@ -12,6 +12,17 @@ import com.snapgames.framework.services.SceneManagerService;
 
 import java.awt.event.KeyEvent;
 
+/**
+ * Demo01App class extends the {@link App} class and implements the {@link InputListener} interface
+ * to provide a basic demonstration of a service-based application with input handling.
+ * <p>
+ * This application initializes various services (configuration, entity management, physics engine,
+ * scene management, rendering, and input handling) and processes user input. Specifically, the Escape
+ * key is configured to request the application to exit.
+ *
+ * @author Frédéric Delorme
+ * @since 0.0.1
+ */
 public class Demo01App extends App implements InputListener {
 
     public Demo01App() {

@@ -46,6 +46,11 @@ public class ConfigurationService extends AbstractService {
         defaultConfigurationFileName = "/config.properties";
     }
 
+    /**
+     * Retrieves the name of the service.
+     *
+     * @return the simple name of the class implementing the service.
+     */
     @Override
     public String getName() {
         return this.getClass().getSimpleName();
@@ -58,15 +63,31 @@ public class ConfigurationService extends AbstractService {
         parseArgs(args);
     }
 
+    /**
+     * Processes the given application instance within the configuration service.
+     *
+     * @param app the application instance to be processed.
+     */
     @Override
     public void process(App app) {
     }
 
+    /**
+     * Retrieves the priority value for this service, which determines
+     * its execution order during initialization, processing, and disposal.
+     *
+     * @return the priority value of the service as an integer
+     */
     @Override
     public int getPriority() {
         return 0;
     }
 
+    /**
+     * Releases resources and performs cleanup operations for this configuration service.
+     *
+     * @param app the parent application instance associated with this service.
+     */
     @Override
     public void dispose(App app) {
     }
@@ -92,11 +113,14 @@ public class ConfigurationService extends AbstractService {
     }
 
     /**
-     * Extract values according to the known key. the recognised key will extract
-     * Typed values to the internal values map.
+     * Extracts and processes a specific configuration value based on the given key.
+     * Updates the application state or configuration parameters accordingly.
+     * Handles different configuration fields such as application settings,
+     * debug levels, window properties, rendering parameters, and physics engine
+     * properties. Logs the configuration changes or issues for unknown arguments.
      *
-     * @param key   the configuration key
-     * @param value the extracted String value.
+     * @param key   the configuration key indicating what parameter is being extracted.
+     * @param value the value associated with the configuration key to be processed.
      */
     private void extractConfigValue(String key, String value) {
         switch (key.toLowerCase()) {
@@ -166,7 +190,16 @@ public class ConfigurationService extends AbstractService {
     }
 
     /**
-     * Read the properties file and extract known keys/values.
+     * Loads the configuration from the specified default configuration file.
+     * The method reads key-value pairs from the configuration file, validates
+     * non-null keys, and extracts corresponding values to process them further.
+     * In the event of an error during the file reading process, it logs an
+     * appropriate error message indicating the failure reason.
+     * <p>
+     * This method relies on the configuration file being accessible at the
+     * specified location and that the file contains valid key-value pairs.
+     * <p>
+     * Throws an IOException in case of failure to read the configuration file.
      */
     private void loadConfiguration() {
         try {
