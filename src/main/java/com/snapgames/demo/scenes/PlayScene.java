@@ -2,6 +2,7 @@ package com.snapgames.demo.scenes;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 import com.snapgames.framework.App;
@@ -60,7 +61,7 @@ public class PlayScene extends AbstractScene implements InputListener {
                         .setPosition(new Vector2d(100.0, 100.0))
                         .setSize(16.0, 18.0))
                 .add(new PriorityComponent().setPriority(1));
-        setCamera(new Camera("cam01").setViewport(320, 200).setTarget(player, 0.002));
+        setCamera(new Camera("cam01").setViewport(320, 200).setTarget(player, 0.02));
         add(player);
 
         Entity score = new Entity("score")
@@ -94,6 +95,8 @@ public class PlayScene extends AbstractScene implements InputListener {
                 .add(new PriorityComponent().setPriority(2));
         add(energyGauge);
 
+        generateBouncingEnemies(10);
+
         Entity grid = new Entity("grid")
                 .add(new GraphicComponent()
                         .setColor(Color.GRAY))
@@ -104,8 +107,29 @@ public class PlayScene extends AbstractScene implements InputListener {
                         .setSize(w.getPlayArea().getWidth(), w.getPlayArea().getHeight())
                         .setType(PhysicType.DYNAMIC))
                 .add(new GridComponent(16, 16).setBox(w.getPlayArea()))
-                .add(new PriorityComponent().setPriority(100));
+                .add(new PriorityComponent().setPriority(-10));
         add(grid);
+    }
+
+    public void generateBouncingEnemies(int nb) {
+        for (int i = 0; i < nb; i++) {
+            Entity enemy = new Entity("enemy_%d".formatted(i))
+                    .add(new GraphicComponent()
+                            .setColor(Color.CYAN)
+                            .setFillColor(Color.BLUE)
+                            .setShape(new Ellipse2D.Double(-8.0, -8.0, 16.0, 16.0)))
+                    .add(new PhysicComponent()
+                            .setType(PhysicType.DYNAMIC)
+                            .setMaterial(new Material("enemy_mat", 1.0, 0.20, 1.12))
+                            .setMass(Math.random() * 100.0 + 10.0)
+                            .setPosition(new Vector2d(-160 + Math.random() * 320.0, -100 + Math.random() * 200.0))
+                            .setVelocity(
+                                    new Vector2d(-0.00001 + Math.random() * 0.00002, -0.00001 + Math.random() * 0.00002)
+                            )
+                            .setSize(8.0, 8.0))
+                    .add(new PriorityComponent().setPriority(2 + i));
+            add(enemy);
+        }
     }
 
     /**
@@ -123,19 +147,18 @@ public class PlayScene extends AbstractScene implements InputListener {
         PhysicComponent pc = player.getComponent(PhysicComponent.class);
 
         if (input.isKeyPressed(KeyEvent.VK_UP)) {
-            pc.getForces().add(new Vector2d(0, -0.99));
+            pc.getForces().add(new Vector2d(0, -0.0005));
         }
         if (input.isKeyPressed(KeyEvent.VK_DOWN)) {
-            pc.getForces().add(new Vector2d(0, 0.002));
+            pc.getForces().add(new Vector2d(0, 0.0002));
 
         }
         if (input.isKeyPressed(KeyEvent.VK_LEFT)) {
-            pc.getForces().add(new Vector2d(-0.002, 0));
+            pc.getForces().add(new Vector2d(-0.0002, 0));
 
         }
         if (input.isKeyPressed(KeyEvent.VK_RIGHT)) {
-            pc.getForces().add(new Vector2d(0.002, 0));
-
+            pc.getForces().add(new Vector2d(0.0002, 0));
         }
     }
 

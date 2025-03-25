@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 
@@ -39,7 +40,7 @@ public class RenderingService extends AbstractService {
      * {@link Entity} objects to be processed within the rendering pipeline of the
      * {@link RenderingService}. This list is implemented using a {@link CopyOnWriteArrayList}
      * to ensure consistent iteration and modification during concurrent access.
-     *
+     * <p>
      * It centralizes all entities intended for rendering and is primarily utilized by methods
      * responsible for drawing and rendering operations. The list's thread-safe behavior ensures
      * reliability and accuracy when multiple threads are interacting with the rendering data.
@@ -51,7 +52,7 @@ public class RenderingService extends AbstractService {
      * that is visible on the screen and manages viewport-related operations.
      * It can track a specific target entity and handle adjustments like tweening
      * or viewport resizing.
-     *
+     * <p>
      * This field is a private member of the {@link RenderingService} class and plays
      * a key role in controlling the rendered perspective of the game world.
      */
@@ -76,6 +77,11 @@ public class RenderingService extends AbstractService {
      * {@code RenderingService}.
      */
     private SceneManagerService scnMgr;
+
+
+    private long currentTime = 0;
+    static double cumulated = 0;
+    private int nbRenderedEntities = 0;
 
     /**
      * Constructor for the RenderingService class.
@@ -102,7 +108,7 @@ public class RenderingService extends AbstractService {
      * Sets up the rendering buffer, application window, and buffer strategy. Additionally,
      * registers the window listener to manage application lifecycle events.
      *
-     * @param app the application instance used to configure and manage services
+     * @param app  the application instance used to configure and manage services
      * @param args the arguments passed during the application initialization
      */
     @Override
@@ -165,8 +171,23 @@ public class RenderingService extends AbstractService {
      */
     @Override
     public void process(App app) {
+        double FPS = 60.0;
+        long previousTime = currentTime;
+        currentTime = System.currentTimeMillis();
+        ;
+        if (cumulated > 1000.0 / FPS) {
+            drawEntitiesToScreen(app);
+            cumulated = 0;
+        }
+
+        double elapsed = currentTime - previousTime;
+        cumulated += elapsed;
+    }
+
+    private void drawEntitiesToScreen(App app) {
         Graphics2D g = renderingBuffer.createGraphics();
         cameraActive = scnMgr.getCurrentScene().getCamera();
+        nbRenderedEntities = 0;
 
         PhysicEngineService pes = app.getService(PhysicEngineService.class.getSimpleName());
 
@@ -191,6 +212,7 @@ public class RenderingService extends AbstractService {
             renderingList = renderingList.stream().filter(e -> cameraActive.hasEntityInView(e)).toList();
             PhysicComponent pc = cameraActive.getComponent(PhysicComponent.class);
             g.translate(-pc.getPosition().getX(), -pc.getPosition().getY());
+            nbRenderedEntities = nbRenderedEntities + renderingList.size();
         }
         // Draw all active sorted entities.
         drawAllEntities(g, renderingList);
@@ -210,6 +232,7 @@ public class RenderingService extends AbstractService {
             GraphicComponent gc = e.getComponent(GraphicComponent.class);
             return e.isActive() && gc.isStickToViewport();
         }).toList();
+        nbRenderedEntities = nbRenderedEntities + renderingList.size();
         // Draw all active stuck to viewport entities.
         drawAllEntities(g, renderingList);
 
@@ -221,14 +244,14 @@ public class RenderingService extends AbstractService {
      * Renders all entities in the provided list by sorting them according to their
      * priority and invoking the drawing logic for each entity.
      *
-     * @param g the {@code Graphics2D} context used to render the entities
+     * @param g             the {@code Graphics2D} context used to render the entities
      * @param renderingList the list of {@code Entity} objects to be rendered
      */
     private void drawAllEntities(Graphics2D g, List<Entity> renderingList) {
         renderingList.stream().sorted((e1, e2) -> {
             PriorityComponent p1 = e1.getComponent(PriorityComponent.class);
             PriorityComponent p2 = e2.getComponent(PriorityComponent.class);
-            return Integer.compare(p1.getPriority(), p1.getPriority());
+            return Integer.compare(p1.getPriority(), p2.getPriority());
         }).forEach(e -> drawEntity(g, e));
     }
 
@@ -247,6 +270,13 @@ public class RenderingService extends AbstractService {
         g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
         g.drawImage(renderingBuffer, 0, 0, frame.getWidth(), frame.getHeight(), 0, 0, renderingBuffer.getWidth(),
                 renderingBuffer.getHeight(), null);
+        if (app.isDebugLevelGreaterThan(0)) {
+            g.setColor(Color.ORANGE);
+            String dbgValues = app.getServicesStatistics().entrySet().stream()
+                    .map(entry -> entry.getKey() + ": " + entry.getValue())
+                    .collect(Collectors.joining(" | ", "[", "]"));
+            g.drawString(dbgValues, 10, frame.getHeight() - 12);
+        }
         frame.getBufferStrategy().show();
         g.dispose();
 
@@ -353,11 +383,11 @@ public class RenderingService extends AbstractService {
      * Retrieves the current statistics of the rendering service.
      *
      * @return a {@code Map<String, Object>} containing key-value pairs representing
-     *         the statistics of the rendering service.
+     * the statistics of the rendering service.
      */
     @Override
     public Map<String, Object> getStats() {
-        return Map.of();
+        return Map.of("FPS", 60, "rendered", nbRenderedEntities);
     }
 
     /**

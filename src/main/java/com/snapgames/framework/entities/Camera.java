@@ -51,4 +51,9 @@ public class Camera extends Entity {
     public Rectangle2D getViewPort() {
         return this.viewport;
     }
+
+    public void update() {
+        PhysicComponent pc = getComponent(PhysicComponent.class);
+        viewport.setRect(pc.getPosition().getX(), pc.getPosition().getY(), pc.getSize().x, pc.getSize().y);
+    }
 }

@@ -46,7 +46,7 @@ public class PhysicEngineService extends AbstractService {
     /**
      * Represents the number of objects that have been updated during the physics
      * processing in the {@link PhysicEngineService}.
-     *
+     * <p>
      * This variable is used to track and count the total number of {@link Entity}
      * objects that were successfully updated within a single processing cycle of
      * the physics engine.
@@ -57,12 +57,15 @@ public class PhysicEngineService extends AbstractService {
      * The {@code world} variable represents the instance of the {@link World} used in the
      * {@link PhysicEngineService} to simulate physical interactions, apply forces such as
      * gravity, and manage the spatial constraints within a defined play area for entities.
-     *
+     * <p>
      * This particular instance initializes the {@link World} with a default gravity vector
      * of {@code (0, -0.981)}, simulating a downward gravitational force, and a play area
      * defined by a {@link Rectangle2D.Double} with width 320 and height 200.
      */
     private World world = new World(new Vector2d(0, -0.981), new Rectangle2D.Double(0, 0, 320, 200));
+
+
+    static double cumulated = 0;
 
     /**
      * Creates an instance of the PhysicEngineService to manage physics-related
@@ -108,12 +111,14 @@ public class PhysicEngineService extends AbstractService {
      */
     @Override
     public void process(App app) {
+        double UPS = 120.0;
         long previousTime = currentTime;
         nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
         double elapsed = currentTime - previousTime;
-        if (elapsed > 0) {
+        cumulated += elapsed;
+        if (cumulated > 1000.0 / UPS) {
             allEntities.stream().forEach(e -> {
                 updateEntity(elapsed, e);
                 nbUpdatedObjects++;
@@ -124,6 +129,7 @@ public class PhysicEngineService extends AbstractService {
                 Camera cam = scnMgr.getCurrentScene().getCamera();
                 processCamera(cam, elapsed);
             }
+            cumulated = 0;
         }
     }
 
@@ -149,6 +155,7 @@ public class PhysicEngineService extends AbstractService {
                         .add(targetPC.getSize().multiply(0.5).substract(camPC.getSize().multiply(0.5))
                                 .substract(camPC.getPosition()))
                         .multiply(camTC.getTweenFactor() * Math.min(elapsed, 1))));
+        cam.update();
     }
 
     /**
@@ -177,30 +184,30 @@ public class PhysicEngineService extends AbstractService {
             PhysicComponent pc = (PhysicComponent) e.getComponent(PhysicComponent.class);
 
             switch (pc.getType()) {
-            case DYNAMIC -> {
-                applyWorldRules(pc, world);
+                case DYNAMIC -> {
+                    applyWorldRules(pc, world);
 
-                pc.setAcceleration(new Vector2d().addAll(pc.getForces()).maximize(0.5));
-                pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(1.0));
-                pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
+                    pc.setAcceleration(new Vector2d().addAll(pc.getForces()).multiply(1.0 / pc.getMass()).maximize(2.0));
+                    pc.setVelocity(pc.getVelocity().add(pc.getAcceleration().multiply(0.5 * elapsed)).maximize(4.0));
+                    pc.setPosition(pc.getPosition().add(pc.getVelocity().multiply(elapsed)));
 
-                pc.getForces().clear();
-                constrainToWorldArea(pc, world);
+                    constrainToWorldArea(pc, world);
 
-                // apply Material roughness on velocity
-                pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
+                    // apply Material roughness on velocity
+                    pc.setVelocity(pc.getVelocity().multiply(pc.getMaterial().getRoughness()));
 
-                // update the corresponding Entity's GraphicComponent shape for rendering.
-                GraphicComponent gc = e.getComponent(GraphicComponent.class);
-                gc.update(pc.getPosition(), pc.getSize());
+                    // update the corresponding Entity's GraphicComponent shape for rendering.
+                    GraphicComponent gc = e.getComponent(GraphicComponent.class);
+                    gc.update(pc.getPosition(), pc.getSize());
 
-            }
-            case STATIC -> {
-                // TODO define processing for static entity
-            }
-            default -> {
-                // TODO define default processing (if any)
-            }
+                    pc.getForces().clear();
+                }
+                case STATIC -> {
+                    // TODO define processing for static entity
+                }
+                default -> {
+                    // TODO define default processing (if any)
+                }
             }
         }
     }
@@ -210,7 +217,7 @@ public class PhysicEngineService extends AbstractService {
      * {@link Entity}'s {@link PhysicComponent}.
      *
      * @param pc    the {@link PhysicComponent} from the {@link Entity} to be
-     *                  updated
+     *              updated
      * @param world the {@link World} instance to take into account.
      */
     private void applyWorldRules(PhysicComponent pc, World world) {
@@ -226,29 +233,37 @@ public class PhysicEngineService extends AbstractService {
      * {@link World}'s play area.
      *
      * @param pc    the {@link PhysicComponent} from the {@link Entity} to be
-     *                  updated
+     *              updated
      * @param world the {@link World} instance to take into account.
      */
     private void constrainToWorldArea(PhysicComponent pc, World world) {
         PhysicComponent worldPC = world.getComponent(PhysicComponent.class);
         Vector2d position = pc.getPosition();
+        Vector2d velocity = pc.getVelocity();
         Vector2d size = pc.getSize();
 
         Rectangle2D worldRect = worldPC.getBBox();
+        if (!world.getPlayArea().contains(position.x, position.y, size.x, size.y)) {
+            if (position.x < worldRect.getX()) {
+                position.x = worldRect.getX();
+                velocity = velocity.set(velocity.x * -worldPC.getMaterial().getElasticity(), velocity.y);
+            }
+            if (position.x + size.x > worldRect.getX() + worldRect.getWidth()) {
+                position.x = worldRect.getX() + worldRect.getWidth() - size.x;
+                velocity = velocity.set(velocity.x * -worldPC.getMaterial().getElasticity(), velocity.y);
 
-        if (position.x < worldRect.getX()) {
-            position.x = worldRect.getX();
+            }
+            if (position.y < worldRect.getY()) {
+                position.y = worldRect.getY();
+                velocity = velocity.set(velocity.x, velocity.y * -worldPC.getMaterial().getElasticity());
+            }
+            if (position.y + size.y > worldRect.getY() + worldRect.getHeight()) {
+                position.y = worldRect.getY() + worldRect.getHeight() - size.y;
+                velocity = velocity.set(velocity.x, velocity.y * -worldPC.getMaterial().getElasticity());
+            }
+            pc.setPosition(position);
+            pc.setVelocity(velocity);
         }
-        if (position.x + size.x > worldRect.getX() + worldRect.getWidth()) {
-            position.x = worldRect.getX() + worldRect.getWidth() - size.x;
-        }
-        if (position.y < worldRect.getY()) {
-            position.y = worldRect.getY();
-        }
-        if (position.y + size.y > worldRect.getY() + worldRect.getHeight()) {
-            position.y = worldRect.getY() + worldRect.getHeight() - size.y;
-        }
-        pc.setPosition(position);
     }
 
     /**
@@ -282,19 +297,20 @@ public class PhysicEngineService extends AbstractService {
      * updated objects processed by the physics engine.
      *
      * @return a map containing statistical data for the service, where the keys
-     *         represent the statistic names (e.g., "service.physic.engine.object.counter")
-     *         and the values represent their respective values.
+     * represent the statistic names (e.g., "service.physic.engine.object.counter")
+     * and the values represent their respective values.
      */
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.physic.engine.object.counter", nbUpdatedObjects);
+        return Map.of("updated", nbUpdatedObjects,
+                "UPS", 120);
     }
 
     /**
      * Retrieves the {@link World} instance managed by the {@code PhysicEngineService}.
      *
      * @return the current {@link World} instance, which contains the play area, gravity,
-     *         and entities managed by the physics engine.
+     * and entities managed by the physics engine.
      */
     public World getWorld() {
         return this.world;

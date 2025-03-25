@@ -69,9 +69,8 @@ public class InputService extends AbstractService implements KeyListener {
 
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.input.service.counter.events", nbEvents,
-                "service.input.service.counter.pressed.keys", nbPressedKeys,
-                "service.input.service.counter.get.keys", nbGetKeys);
+        return Map.of("events", nbEvents,
+                "pk", nbPressedKeys, "gk", nbGetKeys);
     }
 
     /**

@@ -94,8 +94,8 @@ public class ConfigurationService extends AbstractService {
 
     @Override
     public Map<String, Object> getStats() {
-        return Map.of("service.configuration.service.values", values, "service.configuration.service.counter.getValue",
-                nbGetValues, "service.configuration.service.counter.config.file.entries", config.entrySet().size());
+        return Map.of("cget",
+                nbGetValues, "config", config.entrySet().size());
     }
 
     /**
