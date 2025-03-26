@@ -1,159 +1,145 @@
-# Service de Configuration - `ConfigurationService`
+# **Documentation du service `ConfigurationService`**
 
-## Description Générale
+## **1. Description Générale**
 
-La classe **`ConfigurationService`** est un service destiné à **charger, traiter et gérer les paramètres de
-l'application** à partir d'un fichier de configuration ou via des arguments en ligne de commande. Les propriétés sont
-interprétées et stockées dans une structure centralisée, qui permet un accès typé et sécurisé par les autres composants
-de l'application.
-Ce service joue un rôle central dans la personnalisation et l'adaptabilité de l'application, en facilitant la
-configuration des composants tels que les dimensions de la fenêtre, les propriétés graphiques, les paramètres physiques
-ou encore les niveaux de débogage.
+Le **`ConfigurationService`** est un composant central de l'application permettant de **charger, traiter et gérer les
+paramètres de configuration**. Ces paramètres peuvent provenir d’un fichier de configuration (`config.properties`) ou
+être fournis via des **arguments en ligne de commande**.
+L'objectif principal est d'offrir une centralisation des configurations, d'assurer un accès sécurisé et performant à ces
+paramètres, et de permettre une grande flexibilité pour personnaliser le comportement de l'application, que ce soit
+pour :
 
-## Fonctionnement Principal
+- Le rendu graphique,
+- Les dimensions et propriétés des fenêtres,
+- Les paramètres physiques,
+- Les informations liées aux scènes ou aux modes de débogage.
 
-### 1. Chargement des propriétés
+## **2. Fonctionnalités Principales**
 
-- Le service charge des propriétés à partir d'un fichier de configuration au format clé/valeur (`config.properties`).
-- Ces propriétés sont stockées dans une instance `Properties` qui est ensuite transférée dans une **structure
-  thread-safe** (`ConcurrentHashMap`) pour des accès rapides et sécurisés.
+### 2.1 Chargement des Configurations
 
-### 2. Décodage des valeurs
+- Lecture des paramètres par défaut depuis un fichier de configuration (`config.properties`).
+- Les clés/valeurs sont stockées dans une **structure thread-safe (ConcurrentHashMap)** pour permettre un accès rapide
+  et sécurisé.
 
-- La méthode **`extractConfigValue(String key, String value)`** traite chaque clé/valeur.
-- Elle interprète les valeurs en fonction de leur catégorie (texte, dimensions, vecteurs, etc.) et les convertit
-  dynamiquement dans le type approprié (e.g., `int`, `boolean`, `Dimension`, `Vector2d`, `Rectangle2D`).
+### 2.2 Décodage et Conversion des Valeurs
 
-### 3. Application des valeurs
+- Chaque configuration est traitée pour être convertie dans son type natif (`int`, `Dimension`, `Vector2d`, etc.).
+- La méthode **`extractConfigValue(String key, String value)`** garantit cette interprétation, permettant aux composants
+  applicatifs de récupérer directement des paramètres adaptés à leurs besoins.
 
-- Les valeurs extraites sont utilisées pour configurer différents composants de l'application :
-    - Taille et propriétés de la fenêtre.
-    - Options de rendu.
-    - Paramètres physiques (par exemple : gravité, aire de jeu).
-    - Scènes gérées par l'application.
-    - Niveau de debug.
+### 2.3 Surcharge via Arguments CLI
 
-### 4. Modification via la ligne de commande
+- Si des arguments sont passés via la ligne de commande (par exemple `--key=value`), ils peuvent **remplacer les valeurs
+  par défaut** définies dans le fichier de configuration.
+- Cela permet des ajustements "à la volée" sans avoir à modifier les fichiers de configuration directement.
 
-- Les arguments passés via le terminal (par exemple, `--key=value`) peuvent surcharger les valeurs du fichier de
-  configuration.
-- Cela permet de personnaliser rapidement certains paramètres sans modifier le fichier de configuration.
+### 2.4 Ajustements Dynamiques
 
-## Cas d'Utilisation (Use Cases)
+- Les valeurs de configuration sont directement utilisées par d'autres services et composants du jeu (ex.
+  `RenderingService`, `SceneManagerService`).
 
-### 1. Charger un fichier de configuration par défaut
+### 2.5 Statistiques d'utilisation
 
-- **Objectif :** Utiliser un fichier standard pour initialiser les paramètres (comme `config.properties`).
-- **Étapes :**
-    1. Charger les clés/valeurs du fichier.
-    2. Valider chaque clé et effectuer les conversions nécessaires.
-    3. Appliquer les configurations aux composants concernés (par exemple la taille de la fenêtre ou la liste des
-       scènes).
+- Le service maintient une trace des accès aux configurations via une statistique interne (`nbGetValues`).
 
-### 2. Ajuster les paramètres à l'exécution
+## **3. Clés de Configuration Mises à Jour**
 
-- **Objectif :** Appliquer des personnalisations en temps réel via des arguments de ligne de commande.
-- **Exemple :** Surcharger la taille de la fenêtre ou activer un mode de débogage avancé :
+Voici la liste complète des clés de configuration disponibles dans `config.properties`, leur type attendu, ainsi que
+leur rôle :
 
-``` bash
-  java App --app.render.window.size=1280x720 --app.debug.level=5
-```
+### **3.1 Paramètres de l'Application**
 
-### 3. Configurer le moteur physique
+| **Clé**            | **Type**    | **Exemple**                | **Description**                                  |
+|--------------------|-------------|----------------------------|--------------------------------------------------|
+| `app.window.title` | `String`    | `Demo01App (1.0.4 Power4)` | Définit le titre de la fenêtre de l'application. |
+| `app.debug.level`  | `int` (0–6) | `0` ou `5`                 | Niveau de debug (0 = aucun, 6 = très détaillé).  |
 
-- **Objectif :** Initialiser les propriétés du moteur physique (gravité, aire de jeu).
-- **Exemple :** Ajuster la gravité pour une simulation ou étendre la zone de jeu (e.g., en pixels).
+### **3.2 Configuration Graphique (Rendering)**
 
-### 4. Modifier dynamiquement les scènes de l'application
+| **Clé**                         | **Type**    | **Exemple** | **Description**                                                        |
+|---------------------------------|-------------|-------------|------------------------------------------------------------------------|
+| `app.render.buffer.size`        | `Dimension` | `320x200`   | Taille du buffer de rendu interne.                                     |
+| `app.render.window.size`        | `Dimension` | `640x400`   | Taille de la fenêtre d'affichage en pixels.                            |
+| `app.render.window.max.buffers` | `int`       | `3`         | Nombre maximum de buffers (arrière-plans) pour le rendu de la fenêtre. |
+| `app.render.frame.rate`         | `int`       | `60`        | Fréquence d'images (FPS) pour le rendu.                                |
 
-- **Objectif :** Permettre au `SceneManagerService` de charger et gérer les scènes définies dans la configuration.
-- **Exemple :** Spécifier une liste de scènes et définir une scène par défaut à charger au démarrage.
+### **3.3 Paramètres du Moteur Physique (Physics)**
 
-## Liste des Clés de Configuration
+| **Clé**                      | **Type**             | **Exemple**   | **Description**                                                   |
+|------------------------------|----------------------|---------------|-------------------------------------------------------------------|
+| `app.physic.world.gravity`   | `Vector2d`           | `0.0,0.981`   | Gravité appliquée dans le moteur physique (vecteur directionnel). |
+| `app.physic.world.play.area` | `Dimension` ou autre | `560.0x320.0` | Taille de l'aire de jeu (en pixels).                              |
+| `app.physics.update.rate`    | `int`                | `120`         | Fréquence d'actualisation des calculs physiques (UPS).            |
 
-Voici les clés documentées provenant du fichier `config.properties` et des comportements observés dans la classe
-`ConfigurationService`.
+### **3.4 Gestion des Scènes**
 
-### 1. Configurations Globales
+| **Clé**              | **Type** | **Exemple**                                | **Description**                                                                    |
+|----------------------|----------|--------------------------------------------|------------------------------------------------------------------------------------|
+| `app.scenes.list`    | `String` | `play:com.snapgames.demo.scenes.PlayScene` | Liste des scènes disponibles avec leur classe associée sous la forme `nom:classe`. |
+| `app.scenes.default` | `String` | `play`                                     | Nom de la scène par défaut au démarrage de l'application.                          |
 
-| Clé                | Type     | Exemple / Valeur par défaut | Description                                                          |
-|--------------------|----------|-----------------------------|----------------------------------------------------------------------|
-| `app.window.title` | `String` | `"Demo01App"`               | Titre de la fenêtre de l'application.                                |
-| `app.debug.level`  | `int`    | `0`                         | Niveau de débogage (de `0` à `6`, plus élevé = logs plus détaillés). |
+### **3.5 Modes de Débogage et Tests**
 
-### 2. Configurations de Rendu (Graphiques)
+| **Clé**             | **Type**          | **Exemple** | **Description**                                                          |
+|---------------------|-------------------|-------------|--------------------------------------------------------------------------|
+| `app.debug.level`   | `int`             | `0`         | Niveau d'informations de debug affichées dans la console (entre 0 et 6). |
+| `app.debug.counter` | `int` (optionnel) | `10`        | Compteur de debug interne (souvent utilisé uniquement pour les tests).   |
 
-| Clé                             | Type        | Exemple / Valeur par défaut | Description                                   |
-|---------------------------------|-------------|-----------------------------|-----------------------------------------------|
-| `app.render.buffer.size`        | `Dimension` | `320x200`                   | Dimensions du **buffer de rendu** interne.    |
-| `app.render.window.size`        | `Dimension` | `640x400`                   | Dimensions de la fenêtre de rendu visible.    |
-| `app.render.window.max.buffers` | `int`       | `3`                         | Nombre maximum de back buffers pour le rendu. |
+## **4. Cas d'Utilisation Mises à Jour**
 
-### 3. Configurations Physiques
+### 4.1 Initialisation par le Fichier de Configuration
 
-| Clé                          | Type          | Exemple / Valeur par défaut | Description                                                 |
-|------------------------------|---------------|-----------------------------|-------------------------------------------------------------|
-| `app.physic.world.gravity`   | `Vector2d`    | `0.0,0.981`                 | Gravité appliquée dans le moteur physique (vecteur 2D).     |
-| `app.physic.world.play.area` | `Rectangle2D` | `320.0x208.0`               | Aire de jeu (espace physique utilisable) définie en pixels. |
+- **But :** Charger les configurations globales depuis un fichier (`config.properties`).
+- **Flux :**
+    1. Le fichier est lu ligne par ligne.
+    2. Chaque clé/valeur est extraite et convertie dans son type natif.
+    3. Les configurations sont appliquées aux services et composants associés.
 
-### 4. Configurations des Scènes
+### 4.2 Ajustements dynamiques via CLI
 
-| Clé                  | Type     | Exemple / Valeur par défaut                 | Description                                                                              |
-|----------------------|----------|---------------------------------------------|------------------------------------------------------------------------------------------|
-| `app.scenes.list`    | `String` | `play:com.snapgames.demo.scenes.PlayScene;` | Liste des scènes gérées par le `SceneManagerService` avec leurs clés et implémentations. |
-| `app.scenes.default` | `String` | `play`                                      | Scène par défaut activée au démarrage.                                                   |
-
-### 5. Clés Optionnelles (Débogage et Test)
-
-| Clé                 | Type  | Exemple / Valeur par défaut | Description                                                  |
-|---------------------|-------|-----------------------------|--------------------------------------------------------------|
-| `app.debug.counter` | `int` | Non spécifié (désactivé)    | Limite de boucles itératives (exclusivement pour des tests). |
-
-## Résumé Technique
-
-1. **Chargement des configurations** :
-    - Les valeurs sont initialement extraites d'un fichier standard (`config.properties`) et placées dans une structure
-      `Properties`.
-
-2. **Décodage typé** :
-    - Les clés sont interprétées et converties dans les types correspondants (par exemple, un vecteur pour
-      `app.physic.world.gravity`).
-
-3. **Accès centralisé** :
-    - Les configurations sont accessibles dans une **ConcurrentHashMap**, garantissant qu'elles peuvent être
-      lues/modifiées en toute sécurité.
-
-4. **Modifications dynamiques** :
-    - Les paramètres peuvent être surchargés ou ajoutés pendant l'exécution via des arguments CLI (`--key=value`).
-
-## Exemple d'Utilisation Pratique
-
-### Exemple de Ligne de Commande
+- **But :** Personnaliser certains paramètres au moment de l’exécution.
+- **Exemple :**
 
 ``` bash
-java App --app.window.title="SimulationApp" --app.render.window.size=800x600 --app.debug.level=2
+  java -jar game.jar --app.render.window.size=1280x720 --app.physic.world.gravity=0.0,1.5
 ```
 
-### Exemple de Fichier `config.properties`
+- Les valeurs passées sur la ligne de commande remplacent celles du fichier de configuration.
+
+### 4.3 Paramétrage Avancé pour Tests
+
+- **But :** Activer des tests avec des configurations spécifiques.
+- **Exemple :**
 
 ``` properties
-# Exemple : Configurations globales de l'application
-app.window.title=SimulationDemo
-app.debug.level=3
-
-# Configurations de rendu
-app.render.buffer.size=400x300
-app.render.window.size=800x600
-app.render.window.max.buffers=5
-
-# Configurations physiques
-app.physic.world.gravity=0.0,1.0
-app.physic.world.play.area=800.0x600.0
+  # Test specific
+  app.debug.counter=500
 ```
 
-## Conclusion
+Cela limite l'exécution à 500 boucles de mise à jour pour les tests automatiques, par exemple.
 
-La classe **`ConfigurationService`** est un service flexible et central au fonctionnement de l'application, permettant
-de configurer de manière dynamique et typée les différents aspects du programme, qu'il s'agisse des dimensions de la
-fenêtre, des comportements physiques ou encore du rendu graphique. Grâce à son intégration avec des fichiers de
-configuration et la possibilité de surcharger à la ligne de commande, elle offre une solution robuste et modulable.
+## **5. Exemple de Ligne de Commande**
+
+Un exemple combinant différentes options pour configurer l'application depuis le terminal :
+
+``` bash
+java -jar demo01app.jar \
+  --app.window.title="My Custom Game" \
+  --app.render.window.size=1024x768 \
+  --app.render.frame.rate=45 \
+  --app.physic.world.gravity=0.0,1.2
+```
+
+Ce qui effectue :
+
+- Changement du titre de la fenêtre,
+- Adaptation de la taille de la fenêtre à 1024x768,
+- Réduction de la fréquence d'images à 45 FPS,
+- Modification de la gravité dans la simulation physique.
+
+## **6. Conclusion**
+
+Les clés récemment ajoutées rendent le service **`ConfigurationService`** encore plus modulable et flexible. En gérant
+des aspects clés comme le rendu, la physique, et les scènes, tout en offrant une personnalisation rapide via la CLI, il
+constitue un outil puissant pour adapter dynamiquement le comportement de l'application.
