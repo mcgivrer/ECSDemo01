@@ -6,6 +6,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.utils.Node;
 import com.snapgames.framework.components.*;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
@@ -64,7 +65,7 @@ public class PlayScene extends AbstractScene implements InputListener {
         setCamera(new Camera("cam01").setViewport(320, 200).setTarget(player, 0.02));
         add(player);
 
-        Entity score = new Entity("score")
+        Node score = new Entity("score")
                 .add(new GraphicComponent()
                         .setColor(null)
                         .setFillColor(null)
@@ -80,7 +81,7 @@ public class PlayScene extends AbstractScene implements InputListener {
                 .add(new PriorityComponent().setPriority(2));
         add(score);
 
-        Entity energyGauge = new Entity("energy")
+        Node energyGauge = new Entity("energy")
                 .add(new GraphicComponent()
                         .setColor(Color.WHITE)
                         .setFillColor(Color.BLACK)
@@ -97,7 +98,7 @@ public class PlayScene extends AbstractScene implements InputListener {
 
         generateBouncingEnemies(10);
 
-        Entity grid = new Entity("grid")
+        Node grid = new Entity("grid")
                 .add(new GraphicComponent()
                         .setColor(Color.GRAY))
                 .add(new PhysicComponent()
@@ -113,7 +114,7 @@ public class PlayScene extends AbstractScene implements InputListener {
 
     public void generateBouncingEnemies(int nb) {
         for (int i = 0; i < nb; i++) {
-            Entity enemy = new Entity("enemy_%d".formatted(i))
+            Node enemy = new Entity("enemy_%d".formatted(i))
                     .add(new GraphicComponent()
                             .setColor(Color.CYAN)
                             .setFillColor(Color.BLUE)

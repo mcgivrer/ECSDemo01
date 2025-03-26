@@ -3,6 +3,7 @@ package com.snapgames.framework.scenes;
 import java.util.Collection;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.utils.Node;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
 
@@ -62,7 +63,7 @@ public interface Scene {
      * @return a collection of {@link Entity} objects representing all entities
      * associated with this scene.
      */
-    Collection<Entity> getEntities();
+    Collection<Node> getEntities();
 
     /**
      * Retrieves a specific {@link Entity} instance managed by the scene, identified by its name.

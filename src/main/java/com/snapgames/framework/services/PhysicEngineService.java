@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.utils.Node;
 import com.snapgames.framework.components.GraphicComponent;
 import com.snapgames.framework.components.PhysicComponent;
 import com.snapgames.framework.components.TargetComponent;
@@ -117,13 +118,13 @@ public class PhysicEngineService extends AbstractService {
     public void process(App app) {
         long previousTime = currentTime;
         nbUpdatedObjects = 0;
-        List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
+        List<Node> allEntities = collectAllEntities(eMgr.getEntities());
         currentTime = System.currentTimeMillis();
         double elapsed = currentTime - previousTime;
         cumulated += elapsed;
         if (cumulated > 1000.0 / UPS) {
             allEntities.stream().forEach(e -> {
-                updateEntity(elapsed, e);
+                updateEntity(elapsed, (Entity) e);
                 nbUpdatedObjects++;
             });
             SceneManagerService scnMgr = app.getService(SceneManagerService.class.getSimpleName());
@@ -167,8 +168,8 @@ public class PhysicEngineService extends AbstractService {
      * @param entities list of entities to explore and parse
      * @return a linear list of all contained Entity (parent and child)
      */
-    private List<Entity> collectAllEntities(Collection<Entity> entities) {
-        List<Entity> ets = new ArrayList<>();
+    private List<Node> collectAllEntities(Collection<Node> entities) {
+        List<Node> ets = new ArrayList<>();
         ets.addAll(entities);
         entities.forEach(e -> collectAllEntities(e.getChildren()));
         return ets;

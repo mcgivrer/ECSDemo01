@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.utils.Node;
 import com.snapgames.framework.entities.Entity;
 
 /**
@@ -27,7 +28,7 @@ public class EntityManagerService extends AbstractService {
      * The underlying implementation uses a {@link ConcurrentHashMap} to ensure thread safety,
      * enabling concurrent access and modification of entities.
      */
-    private Map<String, Entity> entities = new ConcurrentHashMap<>();
+    private Map<String, Node> entities = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new EntityManagerService instance. This constructor initializes the service
@@ -77,7 +78,7 @@ public class EntityManagerService extends AbstractService {
     @Override
     public Map<String, Object> getStats() {
         return Map.of("entities", entities.values().size(),
-                "active", entities.values().stream().filter(Entity::isActive).count());
+                "active", entities.values().stream().filter(Node::isActive).count());
     }
 
     /**
@@ -86,7 +87,7 @@ public class EntityManagerService extends AbstractService {
      * @param e the {@link Entity} to be added to the collection. The entity is indexed internally
      *          by its unique name, which is retrieved using {@link Entity#getName()}.
      */
-    public void add(Entity e) {
+    public void add(Node e) {
         this.entities.put(e.getName(), e);
     }
 
@@ -96,7 +97,7 @@ public class EntityManagerService extends AbstractService {
      * @param name the name of the {@link Entity} to retrieve.
      * @return the {@link Entity} associated with the specified name, or {@code null} if no matching entity is found.
      */
-    public Entity get(String name) {
+    public Node get(String name) {
         return this.entities.get(name);
     }
 
@@ -105,7 +106,7 @@ public class EntityManagerService extends AbstractService {
      *
      * @return a {@link Collection} of {@link Entity} objects currently managed by this service.
      */
-    public Collection<Entity> getEntities() {
+    public Collection<Node> getEntities() {
         return entities.values();
     }
 
@@ -113,9 +114,9 @@ public class EntityManagerService extends AbstractService {
      * Adds a collection of {@link Entity} objects to the collection of managed entities.
      *
      * @param entitiesList a {@link Collection} of {@link Entity} objects to be added. Each entity
-     *                     in the collection is added individually using the {@link #add(Entity)} method.
+     *                     in the collection is added individually using the {@link #add(Node)} method.
      */
-    public void addAll(Collection<Entity> entitiesList) {
+    public void addAll(Collection<Node> entitiesList) {
         entitiesList.forEach(e -> add(e));
     }
 

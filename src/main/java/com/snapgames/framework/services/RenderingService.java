@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.swing.JFrame;
 
 import com.snapgames.framework.App;
+import com.snapgames.framework.utils.Node;
 import com.snapgames.framework.components.*;
 import com.snapgames.framework.entities.Camera;
 import com.snapgames.framework.entities.Entity;
@@ -45,7 +46,7 @@ public class RenderingService extends AbstractService {
      * responsible for drawing and rendering operations. The list's thread-safe behavior ensures
      * reliability and accuracy when multiple threads are interacting with the rendering data.
      */
-    List<Entity> renderingList = new CopyOnWriteArrayList<>();
+    List<Node> renderingList = new CopyOnWriteArrayList<>();
     /**
      * Represents the currently active {@link Camera} being used by the {@link RenderingService}
      * for rendering the scene. This camera determines the portion of the game world
@@ -200,7 +201,7 @@ public class RenderingService extends AbstractService {
         // Retrieve required services
         EntityManagerService entMgr = (EntityManagerService) app.getService(EntityManagerService.class.getSimpleName());
         renderingList = entMgr.getEntities().stream().filter(e -> {
-            GraphicComponent gc = e.getComponent(GraphicComponent.class);
+            GraphicComponent gc = ((Entity) e).getComponent(GraphicComponent.class);
             return e.isActive() && !gc.isStickToViewport();
         }).toList();
 
@@ -210,7 +211,7 @@ public class RenderingService extends AbstractService {
 
         // Render all objects through camera viewport (if an active camera exists)
         if (Optional.ofNullable(cameraActive).isPresent()) {
-            renderingList = renderingList.stream().filter(e -> cameraActive.hasEntityInView(e)).toList();
+            renderingList = renderingList.stream().filter(e -> cameraActive.hasEntityInView((Entity) e)).toList();
             PhysicComponent pc = cameraActive.getComponent(PhysicComponent.class);
             g.translate(-pc.getPosition().getX(), -pc.getPosition().getY());
             nbRenderedEntities = nbRenderedEntities + renderingList.size();
@@ -230,7 +231,7 @@ public class RenderingService extends AbstractService {
             g.translate(pc.getPosition().getX(), pc.getPosition().getY());
         }
         renderingList = entMgr.getEntities().stream().filter(e -> {
-            GraphicComponent gc = e.getComponent(GraphicComponent.class);
+            GraphicComponent gc = ((Entity) e).getComponent(GraphicComponent.class);
             return e.isActive() && gc.isStickToViewport();
         }).toList();
         nbRenderedEntities = nbRenderedEntities + renderingList.size();
@@ -248,12 +249,12 @@ public class RenderingService extends AbstractService {
      * @param g             the {@code Graphics2D} context used to render the entities
      * @param renderingList the list of {@code Entity} objects to be rendered
      */
-    private void drawAllEntities(Graphics2D g, List<Entity> renderingList) {
+    private void drawAllEntities(Graphics2D g, List<Node> renderingList) {
         renderingList.stream().sorted((e1, e2) -> {
-            PriorityComponent p1 = e1.getComponent(PriorityComponent.class);
-            PriorityComponent p2 = e2.getComponent(PriorityComponent.class);
+            PriorityComponent p1 = ((Entity) e1).getComponent(PriorityComponent.class);
+            PriorityComponent p2 = ((Entity) e2).getComponent(PriorityComponent.class);
             return Integer.compare(p1.getPriority(), p2.getPriority());
-        }).forEach(e -> drawEntity(g, e));
+        }).forEach(e -> drawEntity(g, (Entity) e));
     }
 
     /**
