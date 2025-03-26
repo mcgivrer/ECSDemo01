@@ -20,16 +20,16 @@ Les services sont au cœur de l'architecture de Demo01App. Voici une liste des s
   Détails sur la gestion de l'affichage et du rendu de la fenêtre en utilisant les configurations d'application.
 - [PhysicEngineService : Service du Moteur Physique](05-le-moteur-physique.md)
   Description des fonctionnalités du moteur physique, y compris la gestion de la gravité et des collisions.
-- [SceneManagerService : Gestionnaire de Scènes]()
+- [SceneManagerService : Gestionnaire de Scènes](09-scene-et-scene-manager.md)
   Détails concernant la navigation et la gestion des scènes comme `PlayScene`.
-- [InputService : Service de Gestion des Entrées]()
+- [InputService : Service de Gestion des Entrées](04-entite-et-entitymanager.md)
   Prise en charge des interactions avec l'utilisateur via clavier ou autres dispositifs.
 
 ### **3. Scènes**
 
 Les scènes définissent les éléments interactifs et les comportements dans Demo01App.
 
-- [PlayScene : Scène de Jeu](docs/play-scene.md)
+- [PlayScene : Scène de Jeu](10-scene-de-jeu.md)
   Documentation sur la scène principale du jeu `PlayScene`.
 
 ### **4. Configuration**
