@@ -157,7 +157,7 @@ public class Entity {
     public void update(double elapsed) {
         if (duration != -1 && duration > 0) {
             if (lifeTime + elapsed < duration) {
-                lifeTime += elapsed;
+                lifeTime += (long) elapsed;
             } else {
                 active = false;
             }

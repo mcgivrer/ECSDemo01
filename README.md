@@ -1,52 +1,96 @@
-# README ECSDemo01
+# **Demo01App**
 
-[![Gitea action build](http://nextserver01:4000/frederic/ECSDemo01/actions/workflows/build.yml/badge.svg?branch=develop)](http://nextserver01:4000/frederic/ECSDemo01/actions?workflow=build.yml&actor=0&status=0 "build on /develop")
+Demo01App est une application simple conçue pour illustrer les fonctionnalités d'un framework orienté services.
+L'objectif principal de ce projet est de démontrer l'utilisation de services modulaires pour gérer différents aspects,
+comme l'affichage, la physique, la gestion des entités et les scènes.
 
-## Context
+## **Fonctionnalités**
 
-This is the readme file for "ECSDemo01" tutorial projects (0.0.4) where building a simple 2D game framework step by step
-by adding features, with a moderate ramp-up on complexity.
+- Architecture orientée services pour une modularité et extensibilité maximales.
+- Service de configuration pour charger et gérer les paramètres de l'application.
+- Prise en charge de la gestion des entrées utilisateur.
+- Exemple intégrant la gestion d'une scène via la classe `PlayScene`.
+- Paramètres adaptatifs via un fichier de configuration (`config.properties`) ou des arguments CLI.
+- Moteur physique basique avec paramètres personnalisables (gravité, aire de jeu).
 
-The project architecture is based on the [ECS](https://en.wikipedia.org/wiki/Entity_component_system 
-"Discover what is ECS on wikipedia") principle (**E**ntity, **C**omponent, **S**ystem)
+## **Installation**
 
-Hope this small project will help you on-boarding into the game development adventure with a common and accessible language.
+### Prérequis
 
-## Build
+- **Java 17** ou version plus récente.
+- Une IDE comme IntelliJ IDEA ou Maven pour la gestion du projet.
+- Un terminal pour exécuter l'application via CLI (si nécessaire).
 
-To build the project, just execute the following command line :
+### Étapes d'installation
 
-```bash
-build.sh a
+1. Clonez le dépôt Git :
+
+``` bash
+   git clone https://github.com/your-repo/demo01app.git
 ```
 
-## Run
+1. Compilez le projet avec Maven ou directement via votre IDE (IntelliJ IDEA).
+2. Assurez-vous que le fichier `config.properties` est présent à la racine du projet pour charger les configurations.
 
-To execute the build project, just run it with :
+## **Utilisation**
 
-```bash
-build.sh r
+### Lancer l'application
+
+Depuis le terminal, exécutez la commande suivante :
+
+``` bash
+java -jar demo01app.jar
 ```
 
-or you can execute the command line :
+### Surcharger les paramètres via CLI
 
-```bash
-java -jar target/ECSDemo01-0.0.4.jar
+Vous pouvez personnaliser les paramètres à l'exécution en passant des arguments sous forme `--key=value` :
+Exemple :
+
+``` bash
+java -jar demo01app.jar --app.render.window.size=1280x720 --app.debug.level=4
 ```
 
-or lastly for the Linux machine owner or in a Windows Git Bash terminal :
+## **Documentation**
 
-```bash
-target/build/ECSDemo01-0.0.4.run
-```
+### Documentation complète du projet
 
+- [Documentation complète](docs/index.md)
 
-You'll get this window
+### ConfigurationService
 
-![Illustration de l'execution de la demo](src/docs/illustrations/screenshot-001.png "Illustration de l'execution de la demo")
+Le rôle du **`ConfigurationService`** est crucial pour personnaliser et gérer les paramètres de configuration de
+l'application. Consultez la documentation détaillée ici :
+➡️ [Documentation du ConfigurationService](docs/03-configuration.md)
 
-Enjoy !
+## **Configuration**
 
-Frédéric Delorme.
+Le fichier de configuration `config.properties` permet de définir les valeurs par défaut pour des paramètres comme :
 
-![Alt](https://repobeats.axiom.co/api/embed/b5a901b001053855668644f286f47c1c89c0ea65.svg "Repobeats analytics image")
+- **Rendu graphique** :
+    - Taille de la fenêtre (`app.render.window.size`)
+    - Fréquence d'images (`app.render.frame.rate`)
+
+- **Moteur physique** :
+    - Gravité (`app.physic.world.gravity`)
+    - Zone de jeu (`app.physic.world.play.area`)
+
+- **Debug** :
+    - Niveau de debug (`app.debug.level`)
+
+Vous pouvez modifier ce fichier pour adapter l'application à vos besoins.
+
+## **Contribution**
+
+Les contributions sont les bienvenues ! Si vous souhaitez ajouter des fonctionnalités ou corriger des bugs, veuillez
+forker ce dépôt et ouvrir une pull request.
+
+## **Licence**
+
+Ce projet est sous licence [MIT](LICENSE).
+
+---
+
+Cette version mise à jour intègre un lien direct vers la documentation détaillée de **`ConfigurationService`** (
+`03-configuration.md`) tout en expliquant succinctement son rôle. Le lien est placé dans la section **Documentation**,
+rendant la navigation intuitive pour les développeurs ou les utilisateurs intéressés.
