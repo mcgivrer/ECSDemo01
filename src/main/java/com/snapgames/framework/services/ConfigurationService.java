@@ -144,7 +144,7 @@ public class ConfigurationService extends AbstractService {
                 values.put("app.scenes.list", value.split(";"));
                 info(ConfigurationService.class, "Scene list is [%s]", value);
             }
-            case "app.window.title" -> {
+            case "app.window.title", "title" -> {
                 values.put("app.window.title", value);
                 app.setAppName(value);
                 info(ConfigurationService.class, "Set application name and window title to \"%s\"", value);
@@ -153,34 +153,44 @@ public class ConfigurationService extends AbstractService {
                 values.put("app.scenes.default", value);
                 info(ConfigurationService.class, "Default scene is %s", value);
             }
-            case "app.render.buffer.size" -> {
+            case "app.render.buffer.size", "resolution" -> {
                 String[] sizes = value.split("x");
                 Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[1]));
                 values.put("app.render.buffer.size", buffSize);
                 info(ConfigurationService.class, "Rendering buffer size set to %s", value);
             }
-            case "app.render.window.size" -> {
+            case "app.render.window.size", "window" -> {
                 String[] sizes = value.split("x");
                 Dimension buffSize = new Dimension(Integer.parseInt(sizes[0]), Integer.parseInt(sizes[1]));
                 values.put("app.render.window.size", buffSize);
                 info(ConfigurationService.class, "Rendering window size set to %s", value);
             }
-            case "app.physic.world.gravity" -> {
+            case "app.physic.world.gravity", "gravity" -> {
                 String[] sizes = value.split(",");
                 Vector2d gravity = new Vector2d(Double.parseDouble(sizes[0]), Double.parseDouble(sizes[1]));
                 values.put("app.physic.world.gravity", gravity);
                 info(ConfigurationService.class, "Physic Engine World gravity set to %s", gravity);
             }
-            case "app.physic.world.play.area" -> {
+            case "app.physic.world.play.area", "playarea" -> {
                 String[] sizes = value.split("x");
                 Rectangle2D playArea = new Rectangle2D.Double(0, 0, Double.parseDouble(sizes[0]), Double.parseDouble(sizes[1]));
                 values.put("app.physic.world.play.area", playArea);
                 info(ConfigurationService.class, "Physic Engine World play area size set to %s", value);
             }
-            case "app.render.window.max.buffers" -> {
+            case "app.render.window.max.buffers", "buffers" -> {
                 int maxBuffers = Integer.parseInt(value);
                 values.put("app.render.window.max.buffers", maxBuffers);
                 info(ConfigurationService.class, "Rendering max buffer number set to %s", value);
+            }
+            case "app.render.frame.rate", "fps" -> {
+                double frameRate = Double.parseDouble(value);
+                values.put("app.render.frame.rate", frameRate);
+                info(ConfigurationService.class, "Rendering frame rate set to %s", value);
+            }
+            case "app.physics.update.rate", "ups" -> {
+                double updateRate = Double.parseDouble(value);
+                values.put("app.physics.update.rate", updateRate);
+                info(ConfigurationService.class, "Physic Engine update rate set to %s", value);
             }
 
             default -> {

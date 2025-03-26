@@ -79,6 +79,7 @@ public class RenderingService extends AbstractService {
     private SceneManagerService scnMgr;
 
 
+    double FPS = 60.0;
     private long currentTime = 0;
     static double cumulated = 0;
     private int nbRenderedEntities = 0;
@@ -119,6 +120,7 @@ public class RenderingService extends AbstractService {
         Dimension windowSize = cs.getValue("app.render.window.size");
         String windowTitle = cs.getValue("app.window.title");
         int maxBuffers = cs.getValue("app.render.window.max.buffers");
+        FPS = cs.getValue("app.render.frame.rate");
 
         frame = new JFrame(windowTitle);
         frame.setPreferredSize(windowSize);
@@ -171,7 +173,6 @@ public class RenderingService extends AbstractService {
      */
     @Override
     public void process(App app) {
-        double FPS = 60.0;
         long previousTime = currentTime;
         currentTime = System.currentTimeMillis();
         ;

@@ -67,6 +67,9 @@ public class PhysicEngineService extends AbstractService {
 
     static double cumulated = 0;
 
+
+    double UPS = 120.0;
+
     /**
      * Creates an instance of the PhysicEngineService to manage physics-related
      * computations and updates for the application.
@@ -99,6 +102,7 @@ public class PhysicEngineService extends AbstractService {
         world.setGravity(config.getValue("app.physic.world.gravity"));
         world.setPlayArea(config.getValue("app.physic.world.play.area"));
         eMgr = app.getService(EntityManagerService.class.getSimpleName());
+        UPS = config.getValue("app.physics.update.rate");
         currentTime = System.currentTimeMillis();
     }
 
@@ -111,7 +115,6 @@ public class PhysicEngineService extends AbstractService {
      */
     @Override
     public void process(App app) {
-        double UPS = 120.0;
         long previousTime = currentTime;
         nbUpdatedObjects = 0;
         List<Entity> allEntities = collectAllEntities(eMgr.getEntities());
@@ -315,5 +318,4 @@ public class PhysicEngineService extends AbstractService {
     public World getWorld() {
         return this.world;
     }
-
 }
