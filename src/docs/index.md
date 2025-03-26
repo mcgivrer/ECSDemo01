@@ -1,15 +1,15 @@
-# **Documentation - Demo01App**
+# Documentation - Demo01App
 
-Bienvenue dans la documentation de l'application **Demo01App**. Cette documentation regroupe toutes les informations
+Bienvenue dans la documentation de l'application Demo01App. Cette documentation regroupe toutes les informations
 nécessaires pour comprendre, configurer, et étendre l'application.
 
-## **Table des Matières**
+## Table des Matières
 
-### **1. Introduction**
+### 1. Introduction
 
 - [A propos de Demo01App](00-introduction.md)
 
-### **2. Services**
+### 2. Services
 
 Les services sont au cœur de l'architecture de Demo01App. Voici une liste des services principaux ainsi que leur rôle :
 
@@ -25,14 +25,20 @@ Les services sont au cœur de l'architecture de Demo01App. Voici une liste des s
 - [InputService : Service de Gestion des Entrées](04-entite-et-entitymanager.md)
   Prise en charge des interactions avec l'utilisateur via clavier ou autres dispositifs.
 
-### **3. Scènes**
+### 3. Scènes
 
 Les scènes définissent les éléments interactifs et les comportements dans Demo01App.
 
 - [PlayScene : Scène de Jeu](10-scene-de-jeu.md)
   Documentation sur la scène principale du jeu `PlayScene`.
 
-### **4. Configuration**
+### 4. Hiérarchie et Architecture : Structure Node
+
+- [Structure Node : Gestion hiérarchique des entités](11-structure-node.md)
+  Découvrez comment la classe `Node` introduit une organisation hiérarchique et améliore la gestion des entités,
+  des scénes et des relations parent-enfant.
+
+### 5. Configuration
 
 Documents détaillant les paramètres et options de configuration pour personnaliser l'application :
 
@@ -41,12 +47,12 @@ Documents détaillant les paramètres et options de configuration pour personnal
 - [Fichier de Configuration par Défaut](../main/resources/config.properties)
   Le fichier par défaut incluant les paramètres de l'application.
 
-### **5. Exécution de l'Application**
+### 6. Exécution de l'Application
 
 - [Guide de lancement](../../README.md)
   Instructions pour exécuter l'application depuis un IDE ou la ligne de commande.
 
-### **6. Développement et Contribution**
+### 7. Développement et Contribution
 
 Pour ceux qui souhaitent contribuer au projet ou explorer le code source :
 
@@ -55,14 +61,14 @@ Pour ceux qui souhaitent contribuer au projet ou explorer le code source :
 - [Guide de Débogage et Test](docs/debug-and-test.md)
   Astuces pour mener des tests ou activer le mode débogage à l'exécution.
 
-## **Liens Importants**
+## Liens Importants
 
 - [Dépôt GitHub](https://github.com/mcgivrer/ECSDemo01)
   Retrouvez le code source complet de ce projet sur GitHub.
 - [Licence MIT](../../LICENSE)
   Conditions d'utilisation et de partage du projet.
 
-### **📚 Étendez vos connaissances**
+### 📚 Étendez vos connaissances
 
 Consultez la documentation complète dans chaque fichier mentionné pour mieux comprendre l'architecture, les
 fonctionnalités et les possibilités d'extension de Demo01App.
